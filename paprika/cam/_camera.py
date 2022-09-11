@@ -1,0 +1,63 @@
+from typing import Union
+import cv2
+import queue
+import threading
+from abc import ABC, abstractmethod
+import numpy as np
+
+
+class Camera(ABC):
+    """
+    Webcam class that reads frames from an external webcam.
+
+    Images are accessible via the read() method.
+    """
+
+    @abstractmethod
+    def __init__(self, identifier: Union[int, str] = 0):
+        """
+        Initializes the webcam. The identifier can either be a name (for example an online webcam)
+        or a number (for example a local webcam).
+
+        The default value 0 attempts to open the first local webcam.
+        """
+        pass
+
+    @abstractmethod
+    def read(self) -> np.ndarray:
+        """
+        Returns a frame from the webcam.
+        """
+        pass
+
+
+class BufferlessVideoCapture(Camera):
+    """
+    A class that represents a webcam. The webcam is bufferless, i.e.
+    the read method always returns the latest frame.
+
+    Based on:
+    https://stackoverflow.com/questions/43665208/how-to-get-the-latest-frame-from-capture-device-camera-in-opencv
+    """
+
+    def __init__(self, name: Union[str, int]):
+        self.cap = cv2.VideoCapture(name)
+        self.q = queue.Queue()
+        t = threading.Thread(target=self._reader)
+        t.daemon = True
+        t.start()
+
+    def _reader(self):
+        while True:
+            ret, frame = self.cap.read()
+            if not ret:
+                break
+            if not self.q.empty():
+                try:
+                    self.q.get_nowait()  # discard previous (unprocessed) frame
+                except queue.Empty:
+                    pass
+            self.q.put(frame)
+
+    def read(self) -> np.ndarray:
+        return self.q.get()
