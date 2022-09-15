@@ -13,7 +13,7 @@ Then, install paprika using
 
 ## Repository structure
 - `scripts` contains everything that is directly executable and serves some testing purpose
-- `paprika` is the main module and contains three submodules: `ai`, `cam` and `ui
+- `paprika` is the main module and contains three submodules: `ai`, `cam` and `ui`
 - In each submodule, module's exports gets explicitly reimported in __init__.py. Module-internal files get prefaced with an
 underscore
 
