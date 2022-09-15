@@ -21,9 +21,9 @@ underscore
 - Format all code with `black` before commiting
 - Use types in Python code where possible, check typing errors with `pyright`
 - Add your dependencies to poetry, using `poetry add` or by hand
-- Don't drop files into the repository route, use appropriate sub folders
+- Don't drop files into the repository root, use appropriate sub folders
 - Write basic documentation where possible
-- Write tests if possible
+- Write tests (under a `test` folder) if possible
 - If you change code, see if the tests still run
 - Write sensible commit messages that precisely explain your changes
 - Write commits that serve one purpose (f.e. don't mix up formatting/refactoring and adding features)
