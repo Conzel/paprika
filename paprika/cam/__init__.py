@@ -1,1 +1,1 @@
-from ._camera import Camera, BufferlessVideoCapture
+from ._camera import Camera, BufferlessVideoCapture, DummyCamera
