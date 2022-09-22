@@ -46,6 +46,8 @@ class BufferlessVideoCapture(Camera):
 
     def __init__(self, name: Union[str, int]):
         self.cap = cv2.VideoCapture(name)
+        if not self.cap.isOpened():
+            raise IOError(f"Cannot open webcam {name}")
         self.q = queue.Queue()
         t = threading.Thread(target=self._reader)
         t.daemon = True
