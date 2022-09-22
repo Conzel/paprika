@@ -1,5 +1,9 @@
+from typing import List, Tuple
+
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer
 import numpy as np
+
+from paprika.ml import NeuralNetworkAnalysis, DummyAnalysis
 
 
 class RunningCameraThread(QThread):
@@ -46,3 +50,17 @@ class FrozenCameraThread(QThread):
         timer.setInterval(self.refresh_rate)
         timer.timeout.connect(self.obtain_camera_capture)
         timer.start()
+
+
+# class AnalysisThread(QThread):
+#     """
+#     Thread signaling the completion of the analysis of an image.
+#     """
+#
+#     new_analysis_signal = pyqtSignal(results_dto)
+#
+#     def __init__(self, parent):
+#         QThread.__init__(self, parent)
+#
+#     def compute_everything():
+#         pass

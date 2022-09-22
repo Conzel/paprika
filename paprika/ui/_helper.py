@@ -1,10 +1,12 @@
 """
 Contains helper functions for the UI.
 """
+from typing import List
+
 import numpy as np
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QGridLayout
 
 from paprika.ui._config import *
 
@@ -49,7 +51,7 @@ def camera_image_to_pixmap(captured_image: np.ndarray) -> QPixmap:
     return QPixmap(image)
 
 
-def resize_pixmap(pixmap: QPixmap, size: int) -> QPixmap:
+def resized_pixmap(pixmap: QPixmap, size: int) -> QPixmap:
     """
     Returns the pixmap rescaled to size x size dimension.
     """
@@ -69,15 +71,41 @@ def image_with_explanation(
     german_text_label = QLabel()
     german_text_label.setText(german_text)
     german_text_label.setFont(QFont(german_font, font_size))
-    german_text_label.setStyleSheet(f"color: {german_colour}; text-align: center;")
+    german_text_label.setStyleSheet(f"color: {german_colour}")
     german_text_label.setAlignment(Qt.AlignCenter)
 
     english_text_label = QLabel()
     english_text_label.setText(english_text)
     english_text_label.setFont(QFont(english_font, large_font_size))
-    english_text_label.setStyleSheet(f"color: {english_colour}; text-align: center;")
+    english_text_label.setStyleSheet(f"color: {english_colour}")
     english_text_label.setAlignment(Qt.AlignCenter)
 
     layout.addWidget(german_text_label)
     layout.addWidget(english_text_label)
     return layout
+
+
+def image_and_text_grid(
+    image_labels: List[QLabel], text_labels: List[QLabel], font_size: int
+) -> QGridLayout:
+    """
+    Returns a QGridLayout with filter_column_length columns and filter_row_length rows.
+    It organises the visualisation images in this grid. Below each image it adds a text label.
+    """
+    grid_layout = QGridLayout()
+    i = 0
+    for column in range(filter_column_length):
+        for row in range(filter_row_length):
+            v_layout = QVBoxLayout()
+            image_label = image_labels[i]
+            text_label = text_labels[i]
+            text_label.setFont(QFont(german_font, font_size))
+            text_label.setStyleSheet(f"color: {german_colour}")
+            text_label.setAlignment(Qt.AlignCenter)
+            v_layout.addWidget(image_label)
+            v_layout.addWidget(text_label)
+            v_layout.addSpacing(vertical_spacing_filters)
+            i += 1
+            grid_layout.addLayout(v_layout, column, row)
+    grid_layout.setHorizontalSpacing(horizontal_spacing_filters)
+    return grid_layout
