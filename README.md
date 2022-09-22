@@ -11,6 +11,18 @@ Then, install paprika using
 
 ```poetry install```
 
+If you use VSCode, to get the venv to be picked up, type 
+
+```poetry config virtualenvs.in-project true```
+
+Before creating the venv. If you have already created the venv, delete it:
+
+```poetry env list  
+poetry env remove <current environment>
+```
+
+And then install the venv again.
+
 ## Repository structure
 - `scripts` contains everything that is directly executable and serves some testing purpose
 - `paprika` is the main module and contains three submodules: `ai`, `cam` and `ui`
