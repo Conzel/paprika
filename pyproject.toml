@@ -1,15 +1,17 @@
 [tool.poetry]
 name = "paprika"
 version = "0.1.0"
-description = ""
+description = "Art project for the Tubingen Stadtmuseum, exhibiting how an AI classifies images"
 authors = ["Conzel <38732545+Conzel@users.noreply.github.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
 python = "3.9.*"
-
-[tool.poetry.dev-dependencies]
+opencv-python = "^4.6.0.66"
+torch = {url="https://download.pytorch.org/whl/cu116/torch-1.12.1%2Bcu116-cp39-cp39-linux_x86_64.whl"}
+torchvision = {url="https://download.pytorch.org/whl/cu116/torchvision-0.13.1%2Bcu116-cp39-cp39-linux_x86_64.whl"}
+PyQt5 = "^5.15.7"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
