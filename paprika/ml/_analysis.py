@@ -151,7 +151,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         for i in range(n):
             filter_id = most_activated_filters[i]
-            filter_activation = predictions[filter_id].item()
+            filter_activation = (mean_act[filter_id]/torch.sum(torch.tensor(mean_act))).item()
             image_path = os.path.abspath(
                 os.path.expanduser(
                     os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
