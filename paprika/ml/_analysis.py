@@ -3,6 +3,7 @@ import random
 import time
 import numpy as np
 import torch
+from ._label_converter import labelConverter
 from pytorch_grad_cam import (
     GradCAM,
     ScoreCAM,
@@ -151,7 +152,9 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         for i in range(n):
             filter_id = most_activated_filters[i]
-            filter_activation = (mean_act[filter_id]/torch.sum(torch.tensor(mean_act))).item()
+            filter_activation = (
+                mean_act[filter_id] / torch.sum(torch.tensor(mean_act))
+            ).item()
             image_path = os.path.abspath(
                 os.path.expanduser(
                     os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
@@ -174,7 +177,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         )
         targets = [ClassifierOutputTarget(281)]
         # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
-        grayscale_cam = cam(input_tensor=self.image, targets=targets, aug_smooth=True)
+        grayscale_cam = cam(input_tensor=self.image, targets=None, eigen_smooth=True)
         # In this example grayscale_cam has only one image in the batch:
         grayscale_cam = grayscale_cam[0, :]
         rgb_image = np.asarray(T.ToPILImage()(self.image.squeeze(0))) / 255.0
@@ -202,7 +205,9 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         for idx in indices:
 
             class_prediction = ClassPrediction(
-                label=IMAGENET_CLASS_LIST[idx],
+                label=labelConverter()[
+                    idx
+                ],  # labelConverter() needed for lucent implementation
                 score=predictions[idx].item(),
                 similar_images=None,
             )
