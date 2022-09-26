@@ -26,7 +26,7 @@ preprocess_tensor = transforms.Compose(
 
 
 # test image
-img = np.asarray(Image.open('dog.jpg'))
+img = np.asarray(Image.open('test_images/dog.jpg'))
 
 pil_img = Image.fromarray(img.copy())
 im_cropped = preprocess_image(pil_img)
@@ -37,7 +37,7 @@ print('score', (Inceptionv1Analysis(im_tensor).get_class_predictions(3,1))[0].sc
 print('filters',Inceptionv1Analysis(im_tensor).get_most_activated_filters('mixed3a',3))
 map = Inceptionv1Analysis(im_tensor).get_saliency_map()
 plt.imshow(map)
-#plt.savefig("test.jpg")
+#plt.savefig("test_images/test.jpg")
 while True:
     cv2.imshow("map",map)
     if cv2.waitKey(1) & 0xFF == ord("q"):
