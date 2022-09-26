@@ -2,6 +2,24 @@ import os
 import random
 import time
 import numpy as np
+import torch
+from pytorch_grad_cam import (
+    GradCAM,
+    ScoreCAM,
+    GradCAMPlusPlus,
+    AblationCAM,
+    XGradCAM,
+    EigenCAM,
+    FullGrad,
+    EigenGradCAM,
+)
+import torchvision.transforms as T
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
+import matplotlib.pyplot as plt
+from ._imagenet_class_list import IMAGENET_CLASS_LIST
+from lucent.modelzoo import inceptionv1
+from PIL import Image
 from abc import ABC, abstractmethod
 from typing import List, Tuple
 
@@ -41,8 +59,9 @@ class NeuralNetworkAnalysis(ABC):
 
     @abstractmethod
     def get_most_activated_filters(
-        self, layer: str, n: int
+        self, layer_string: str, n: int
     ) -> List[Tuple[str, int, float]]:
+
         """
         Returns a list of length n containing (image_path, filter_id, filter_activation)
         elements, where
@@ -67,6 +86,7 @@ class NeuralNetworkAnalysis(ABC):
     def get_class_predictions(
         self, n_predictions: int, n_images: int
     ) -> List[ClassPrediction]:
+
         """
         Returns a list of the n_predictions most likely classes for the image.
         Each class contains the score (percentage), the label (name), and a list of n_images similar images.
@@ -74,6 +94,19 @@ class NeuralNetworkAnalysis(ABC):
         The images are returned in descending order of likelihood.
         """
         pass
+
+
+# hook function gets executed during forward pass
+# this is used to obtain the feature map aka layer output
+class SaveFeatures:
+    def __init__(self, module):
+        self.hook = module.register_forward_hook(self.hook_fn)
+
+    def hook_fn(self, module, input, output):
+        self.features = output
+
+    def close(self):
+        self.hook.remove()
 
 
 class Inceptionv1Analysis(NeuralNetworkAnalysis):
@@ -83,10 +116,11 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
     def __init__(self, img: np.ndarray):
         """Performs the analysis on the given image."""
-        pass
+        self.model = inceptionv1(pretrained=True).eval()
+        self.image = img
 
     def get_most_activated_filters(
-        self, layer: str, n: int
+        self, layer_string: str, n: int
     ) -> List[Tuple[str, int, float]]:
         """
         Returns a list of length n containing (image_path, filter_id, filter_activation)
@@ -98,14 +132,54 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         The elements are ordered by filter_activation in decreasing order.
         """
-        pass
+        layer_number = filter_strings_to_numbers[layer_string]
+        layer = list(self.model.children())[layer_number]
+        activations = SaveFeatures(layer)
+        predictions = self.model(self.image)[0]
+        mean_act = [
+            activations.features[0, i].mean()
+            for i in range(activations.features.shape[1])
+        ]
+
+        # select the filters with the highest score
+        most_activated_filters = (
+            torch.topk(torch.tensor(mean_act), n).indices.cpu().detach().numpy()
+        )
+
+        filters = []
+        folder_path = "../" + visualisations_relative_path
+
+        for i in range(n):
+            filter_id = most_activated_filters[i]
+            filter_activation = predictions[filter_id].item()
+            image_path = os.path.abspath(
+                os.path.expanduser(
+                    os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
+                )
+            )
+            filters.append((image_path, filter_id, filter_activation))
+
+        return filters
 
     def get_saliency_map(self) -> np.ndarray:
         """
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
         """
-        pass
+        target_layers = [list(self.model.children())[136]]  # lucent implementation
+
+        # Construct the CAM object once, and then re-use it on many images:
+        cam = GradCAMPlusPlus(
+            model=self.model, target_layers=target_layers, use_cuda=False
+        )
+        targets = [ClassifierOutputTarget(281)]
+        # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
+        grayscale_cam = cam(input_tensor=self.image, targets=targets, aug_smooth=True)
+        # In this example grayscale_cam has only one image in the batch:
+        grayscale_cam = grayscale_cam[0, :]
+        rgb_image = np.asarray(T.ToPILImage()(self.image.squeeze(0))) / 255.0
+        visualization = show_cam_on_image(rgb_image, grayscale_cam, use_rgb=True)
+        return visualization
 
     def get_class_predictions(
         self, n_predictions: int, n_images: int
@@ -116,7 +190,25 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         The images are returned in descending order of likelihood.
         """
-        pass
+
+        predictions = self.model(self.image)[0]
+        indices = (
+            torch.topk(torch.tensor(list(predictions)), n_predictions)
+            .indices.cpu()
+            .detach()
+            .numpy()
+        )
+        class_predictions = []
+        for idx in indices:
+
+            class_prediction = ClassPrediction(
+                label=IMAGENET_CLASS_LIST[idx],
+                score=predictions[idx].item(),
+                similar_images=None,
+            )
+            class_predictions.append(class_prediction)
+
+        return class_predictions
 
 
 class DummyAnalysis(NeuralNetworkAnalysis):
@@ -132,7 +224,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         self.delay = delay
 
     def get_most_activated_filters(
-        self, layer: str, n: int
+        self, layer_string: str, n: int
     ) -> List[Tuple[str, int, float]]:
         """
         Returns a list of length n containing (image_path, filter_id, filter_activation)
@@ -147,7 +239,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         time.sleep(self.delay)
         filters = []
         folder_path = "../" + visualisations_relative_path
-        nr_filters = filter_numbers_per_layer[layer]
+        nr_filters = filter_numbers_per_layer[layer_string]
         possible_activations = np.linspace(0.08, 4.532).tolist()
         activations = random.choices(possible_activations, k=n)
         activations.sort(reverse=True)
@@ -155,7 +247,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
             filter_id = random.randint(0, nr_filters - 1)
             image_path = os.path.abspath(
                 os.path.expanduser(
-                    os.path.expandvars(f"{folder_path}{layer}/{filter_id}.jpg")
+                    os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
                 )
             )
             filter_activation = activations[i]

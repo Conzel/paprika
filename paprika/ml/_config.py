@@ -14,3 +14,14 @@ filter_numbers_per_layer = {
     "mixed5a": 832,
     "mixed5b": 1024,
 }
+filter_strings_to_numbers = {
+    "mixed3a": 70,
+    "mixed3b": 78,
+    "mixed4a": 87,
+    "mixed4b": 95,
+    "mixed4c": 103,
+    "mixed4d": 111,
+    "mixed4e": 119,
+    "mixed5a": 128,
+    "mixed5b": 136,
+}
