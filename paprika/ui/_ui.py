@@ -16,9 +16,11 @@ class UserInterface(QObject):
     UI suitable for 4 FHD screens in portrait mode.
     """
 
-    def __init__(self, camera: Camera):
+    def __init__(self, camera: Camera, analysis_class: NeuralNetworkAnalysis):
         super().__init__()
         self.app = QApplication(sys.argv)
+
+        self.analysis_class = analysis_class
 
         # set up threads that capture camera images and connect to their signal
         self.camera = camera
@@ -30,6 +32,10 @@ class UserInterface(QObject):
             self, self.camera, frozen_camera_refresh_seconds
         )
         self.frozen_camera_thread.new_capture_signal.connect(self.on_new_frozen_capture)
+
+        # set up thread that captures the ML analysis and connect to its signal
+        self.analysis_thread = AnalysisThread(self, self.analysis_class)
+        self.analysis_thread.new_analysis_signal.connect(self.on_new_analysis)
 
         # create labels for the two cameras
         self.running_camera_label = QLabel()
@@ -117,13 +123,19 @@ class UserInterface(QObject):
         self.running_camera_label.setPixmap(pixmap)
 
     def on_new_frozen_capture(self, image: np.ndarray):
-        # caution: image might need to be cropped and converted to RGB
-        dummy_analysis = DummyAnalysis(image)
+        self.analysis_thread.compute_everything(image)
+
+    def on_new_analysis(self, analysis_dto: AnalysisResultsDTO):
+        # set camera feed to new capture
+        image = analysis_dto.original_image
+        pixmap = camera_image_to_pixmap(image)
+        pixmap = resized_pixmap(pixmap, camera_capture_size)
+        self.frozen_camera_label.setPixmap(pixmap)
+
+        # update the filter images in each layer
+        layer_filters = analysis_dto.layer_filters
         for layer in selected_layers:
-            activated_filters = dummy_analysis.get_most_activated_filters(
-                layer, filter_column_length * filter_row_length
-            )
-            # update images in each layer
+            activated_filters = layer_filters[layer]
             for i in range(filter_column_length * filter_row_length):
                 image_path, filter_id, filter_activation = activated_filters[i]
                 pixmap = QPixmap(image_path)
@@ -133,11 +145,6 @@ class UserInterface(QObject):
                 self.filter_text_labels[layer][i].setText(
                     f"Filter {filter_id}  -  {round(filter_activation, 1)}%"
                 )
-
-        # set camera feed to new capture
-        pixmap = camera_image_to_pixmap(image)
-        pixmap = resized_pixmap(pixmap, camera_capture_size)
-        self.frozen_camera_label.setPixmap(pixmap)
 
     def run(self):
         self.app.exec_()
