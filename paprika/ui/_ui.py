@@ -1,10 +1,11 @@
 import sys
 
 from PyQt5.QtCore import QObject
-from PyQt5.QtWidgets import QApplication, QGridLayout
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QApplication, QGridLayout, QShortcut
 
 from paprika.cam import Camera
-from paprika.ml import DummyAnalysis
+from paprika.ml import DummyAnalysis, Inceptionv1Analysis
 from paprika.ui._ui_thread import *
 from paprika.ui._config import *
 from paprika.ui._helper import *
@@ -50,6 +51,11 @@ class UserInterface(QObject):
         self.init_screen_lower_filters()
         self.init_screen_higher_filters()
         self.init_screen_predictions()
+
+        # add Ctrl+Q shortcut for quitting the app
+        for screen_widget in self.screen_widgets:
+            quit_shortcut = QShortcut(QKeySequence("Ctrl+Q"), screen_widget)
+            quit_shortcut.activated.connect(self.app.quit)
 
     def init_screen_camera_feed(self):
         # add the two camera feeds to a layout
@@ -134,4 +140,4 @@ class UserInterface(QObject):
         self.frozen_camera_label.setPixmap(pixmap)
 
     def run(self):
-        sys.exit(self.app.exec_())
+        self.app.exec_()
