@@ -119,6 +119,12 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         """Performs the analysis on the given image."""
         self.model = inceptionv1(pretrained=True).eval()
         self.image = img
+        self.preprocess_image = T.Compose(
+            [
+                T.ToTensor(),
+                T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            ]
+        )
 
     def get_most_activated_filters(
         self, layer_string: str, n: int
@@ -136,7 +142,8 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         layer_number = filter_strings_to_numbers[layer_string]
         layer = list(self.model.children())[layer_number]
         activations = SaveFeatures(layer)
-        predictions = self.model(self.image)[0]
+        image = self.preprocess_image(self.image).unsqueeze(0)
+        predictions = self.model(image)[0]
         mean_act = [
             activations.features[0, i].mean()
             for i in range(activations.features.shape[1])
@@ -175,13 +182,17 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         cam = GradCAMPlusPlus(
             model=self.model, target_layers=target_layers, use_cuda=False
         )
-        targets = [ClassifierOutputTarget(281)]
+        # targets = [ClassifierOutputTarget(281)]
         # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
-        grayscale_cam = cam(input_tensor=self.image, targets=None, eigen_smooth=True)
+        img_to_tensor = T.PILToTensor()(self.image)
+        input_tensor = img_to_tensor[None, :] / 255.0
+        grayscale_cam = cam(
+            input_tensor=input_tensor, targets=None, eigen_smooth=False, aug_smooth=True
+        )
         # In this example grayscale_cam has only one image in the batch:
         grayscale_cam = grayscale_cam[0, :]
-        rgb_image = np.asarray(T.ToPILImage()(self.image.squeeze(0))) / 255.0
-        visualization = show_cam_on_image(rgb_image, grayscale_cam, use_rgb=True)
+        rgb_image = np.asarray(T.ToPILImage()(img_to_tensor)) / 255.0
+        visualization = show_cam_on_image(rgb_image, grayscale_cam)
         return visualization
 
     def get_class_predictions(
@@ -193,8 +204,8 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         The images are returned in descending order of likelihood.
         """
-
-        predictions = self.model(self.image)[0]
+        image = self.preprocess_image(self.image).unsqueeze(0)
+        predictions = self.model(image)[0]
         indices = (
             torch.topk(torch.tensor(list(predictions)), n_predictions)
             .indices.cpu()

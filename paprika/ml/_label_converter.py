@@ -1,7 +1,7 @@
 def labelConverter():
     labelDict = {}
     lines = []
-    with open("inceptionv1_lucent_labels.txt") as file:
+    with open("old_labels.txt") as file:
         # read all lines into the lines-array
         lines = file.readlines()
 
