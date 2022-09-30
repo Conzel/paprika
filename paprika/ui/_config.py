@@ -23,8 +23,8 @@ english_colour = "#212121"
 
 # screen number for each action
 screen_nr_camera_feed = 0
-screen_nr_lower_filters = 2
-screen_nr_higher_filters = 3
+screen_nr_lower_filters = None
+screen_nr_higher_filters = None
 screen_nr_predictions = 1
 
 selected_layers = ["mixed3b", "mixed4b", "mixed4e", "mixed5b"]  # all layers to be shown

@@ -68,12 +68,16 @@ class UserInterface(QObject):
             self.prediction_german_labels.append(QLabel())
             self.prediction_english_labels.append(QLabel())
 
-        # set up the layout on all of the 4 screens
+        # set up the layout on the 4 screens
         self.screen_widgets = get_full_screen_widgets(self.app)
-        self.init_screen_camera_feed()
-        self.init_screen_lower_filters()
-        self.init_screen_higher_filters()
-        self.init_screen_predictions()
+        if screen_nr_camera_feed is not None:
+            self.init_screen_camera_feed()
+        if screen_nr_lower_filters is not None:
+            self.init_screen_lower_filters()
+        if screen_nr_higher_filters is not None:
+            self.init_screen_higher_filters()
+        if screen_nr_predictions is not None:
+            self.init_screen_predictions()
 
         # add Ctrl+Q shortcut for quitting the app
         for screen_widget in self.screen_widgets:
