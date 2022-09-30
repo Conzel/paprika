@@ -12,11 +12,11 @@ os.system("xrandr --output DP-3 --rotate left")
 os.system("xrandr --output DP-4 --rotate left")
 
 print("starting camera...")
-camera = DummyCamera(0)
-# camera = BufferlessVideoCapture(-1)
+# camera = DummyCamera(0)
+camera = BufferlessVideoCapture(-1)
 # camera = BufferlessVideoCapture(0)
 print("camera started")
-ui = UserInterface(camera, DummyAnalysis)
+ui = UserInterface(camera, Inceptionv1Analysis)
 ui.run()
 
 # rotate all screens back

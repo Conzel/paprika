@@ -2,6 +2,7 @@
 Contains helper functions for the UI.
 """
 from typing import List
+from PIL import Image
 from skimage.transform import resize
 import numpy as np
 from PyQt5.QtCore import Qt
@@ -46,13 +47,13 @@ def bgr_to_rgb(image: np.ndarray) -> np.ndarray:
 def image_for_analysis(image: np.ndarray) -> np.ndarray:
     """
     Makes image suitable for ML analysis.
-    It converts from BGR format to RGB, crops in the middle and resizes to 224*224.
+    It converts from BGR format to RGB, crops in the middle,
+    resizes to 224*224 and converts to PIL Image.
     """
     analysis_image = bgr_to_rgb(image)
     analysis_image = middle_cropped_image(analysis_image)
-    analysis_image = analysis_image / 255
     analysis_image = resize(analysis_image, (224, 224), anti_aliasing=True)
-    analysis_image = analysis_image * 255
+    analysis_image = Image.fromarray(analysis_image, mode='RGB')
     return analysis_image
 
 
@@ -62,8 +63,8 @@ def image_to_pixmap(image: np.ndarray) -> QPixmap:
     """
     height, width, channel = image.shape
     bytes_per_line = 3 * width
-    saliency_image = np.require(image, np.uint8, "C")
-    image = QImage(saliency_image, width, height, bytes_per_line, QImage.Format_RGB888)
+    image = np.require(image, np.uint8, "C")
+    image = QImage(image, width, height, bytes_per_line, QImage.Format_RGB888)
     return QPixmap(image)
 
 

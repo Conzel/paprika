@@ -275,7 +275,8 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
         """
-        return np.clip(3 * (self.image - 128) + 128, 0, 255)
+        img = self.image * 255
+        return np.clip(1 * (img - 128) + 128, 0, 255)
 
     def get_class_predictions(
         self, n_predictions: int, n_images: int
