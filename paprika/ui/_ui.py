@@ -54,6 +54,11 @@ class UserInterface(QObject):
                 self.filter_image_labels[layer].append(QLabel())
                 self.filter_text_labels[layer].append(QLabel())
 
+        # create labels for the predictions
+        self.saliency_image_label = QLabel()
+        self.saliency_english_label = QLabel()
+        self.saliency_german_label = QLabel()
+
         # set up the layout on all of the 4 screens
         self.screen_widgets = get_full_screen_widgets(self.app)
         self.init_screen_camera_feed()
@@ -79,12 +84,16 @@ class UserInterface(QObject):
             large_font_size,
             frozen_camera_german_text,
             frozen_camera_english_text,
+            QLabel(),
+            QLabel(),
         )
         running_camera_layout = image_with_explanation(
             self.running_camera_label,
             large_font_size,
             running_camera_german_text,
             running_camera_english_text,
+            QLabel(),
+            QLabel(),
         )
         layout.addLayout(frozen_camera_layout, 0, 0, Qt.AlignCenter)
         layout.addLayout(running_camera_layout, 1, 0, Qt.AlignCenter)
@@ -118,7 +127,19 @@ class UserInterface(QObject):
             layout.addLayout(layer_layout, 0, i, Qt.AlignCenter)
 
     def init_screen_predictions(self):
-        pass
+        # add the saliency map and predictions to a layout
+        screen_widget = self.screen_widgets[screen_nr_predictions]
+        layout = QGridLayout(screen_widget)
+
+        saliency_layout = image_with_explanation(
+            self.saliency_image_label,
+            large_font_size,
+            saliency_map_german_text("X"),
+            saliency_map_english_text("Y"),
+            self.saliency_german_label,
+            self.saliency_english_label,
+        )
+        layout.addLayout(saliency_layout, 0, 0, Qt.AlignCenter)
 
     def on_new_running_capture(self, image: np.ndarray):
         """
@@ -140,15 +161,7 @@ class UserInterface(QObject):
         self.analysis_worker.new_analysis_signal.connect(self.on_new_analysis)
         self.analysis_thread.started.connect(self.analysis_worker.start)
 
-        # signals and slots for deleting the worker and the thread
         self.analysis_worker.new_analysis_signal.connect(self.analysis_thread.quit)
-        self.analysis_worker.new_analysis_signal.connect(
-            self.analysis_worker.deleteLater
-        )
-        self.analysis_worker.new_analysis_signal.connect(
-            self.analysis_thread.deleteLater
-        )
-
         self.analysis_thread.start()
 
     def on_new_analysis(self, analysis_dto: AnalysisResultsDTO):
@@ -175,6 +188,12 @@ class UserInterface(QObject):
                 self.filter_text_labels[layer][i].setText(
                     f"Filter {filter_id}  -  {round(filter_activation, 1)}%"
                 )
+
+        # update the saliency map
+        saliency_image = analysis_dto.saliency_map
+        pixmap = image_to_pixmap(saliency_image)
+        pixmap = resized_pixmap(pixmap, camera_capture_size)
+        self.saliency_image_label.setPixmap(pixmap)
 
     def run(self):
         self.app.exec_()

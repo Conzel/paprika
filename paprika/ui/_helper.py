@@ -2,7 +2,7 @@
 Contains helper functions for the UI.
 """
 from typing import List
-
+from skimage.transform import resize
 import numpy as np
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont
@@ -36,19 +36,45 @@ def middle_cropped_image(image: np.ndarray) -> np.ndarray:
     return new_image
 
 
+def bgr_to_rgb(image: np.ndarray) -> np.ndarray:
+    """
+    Converts an image in BGR format to RGB format.
+    """
+    return image[:, :, [2, 1, 0]]
+
+
+def image_for_analysis(image: np.ndarray) -> np.ndarray:
+    """
+    Makes image suitable for ML analysis.
+    It converts from BGR format to RGB, crops in the middle and resizes to 224*224.
+    """
+    analysis_image = bgr_to_rgb(image)
+    analysis_image = middle_cropped_image(analysis_image)
+    analysis_image = analysis_image / 255
+    analysis_image = resize(analysis_image, (224, 224), anti_aliasing=True)
+    analysis_image = analysis_image * 255
+    return analysis_image
+
+
+def image_to_pixmap(image: np.ndarray) -> QPixmap:
+    """
+    Returns image as QPixmap.
+    """
+    height, width, channel = image.shape
+    bytes_per_line = 3 * width
+    saliency_image = np.require(image, np.uint8, "C")
+    image = QImage(saliency_image, width, height, bytes_per_line, QImage.Format_RGB888)
+    return QPixmap(image)
+
+
 def camera_image_to_pixmap(captured_image: np.ndarray) -> QPixmap:
     """
     Returns captured_image as QPixmap in RGB format and cropped in the middle.
     captured_image: in BGR format
     """
     cropped_image = middle_cropped_image(captured_image)
-    height, width, channel = cropped_image.shape
-    bytes_per_line = 3 * width
-    cropped_image = np.require(cropped_image, np.uint8, "C")
-    image = QImage(
-        cropped_image, width, height, bytes_per_line, QImage.Format_RGB888
-    ).rgbSwapped()
-    return QPixmap(image)
+    cropped_image = bgr_to_rgb(cropped_image)
+    return image_to_pixmap(cropped_image)
 
 
 def resized_pixmap(pixmap: QPixmap, size: int) -> QPixmap:
@@ -59,7 +85,12 @@ def resized_pixmap(pixmap: QPixmap, size: int) -> QPixmap:
 
 
 def image_with_explanation(
-    image_label: QLabel, font_size: int, german_text: str, english_text: str
+    image_label: QLabel,
+    font_size: int,
+    german_text: str,
+    english_text: str,
+    german_text_label: QLabel,
+    english_text_label: QLabel,
 ) -> QVBoxLayout:
     """
     Returns a QVBoxLayout in which there are three aligned QLabels containing the image,
@@ -68,13 +99,11 @@ def image_with_explanation(
     layout = QVBoxLayout()
     layout.addWidget(image_label)
 
-    german_text_label = QLabel()
     german_text_label.setText(german_text)
     german_text_label.setFont(QFont(german_font, font_size))
     german_text_label.setStyleSheet(f"color: {german_colour}")
     german_text_label.setAlignment(Qt.AlignCenter)
 
-    english_text_label = QLabel()
     english_text_label.setText(english_text)
     english_text_label.setFont(QFont(english_font, large_font_size))
     english_text_label.setStyleSheet(f"color: {english_colour}")

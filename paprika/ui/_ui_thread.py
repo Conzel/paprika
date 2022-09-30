@@ -5,6 +5,7 @@ import numpy as np
 
 from paprika.ml import NeuralNetworkAnalysis, DummyAnalysis
 from paprika.ui._config import *
+from paprika.ui._helper import middle_cropped_image, bgr_to_rgb, image_for_analysis
 
 
 class AnalysisResultsDTO:
@@ -16,9 +17,13 @@ class AnalysisResultsDTO:
         self.original_image = image
         self.layers = layers
         self.layer_filters = {}
+        self.saliency_map = None
 
     def add_layer_filters(self, layer, filters):
         self.layer_filters[layer] = filters
+
+    def add_saliency_map(self, saliency_map):
+        self.saliency_map = saliency_map
 
 
 class RunningCameraWorker(QObject):
@@ -84,11 +89,21 @@ class AnalysisWorker(QObject):
 
     def start(self):
         results_dto = AnalysisResultsDTO(self.image, selected_layers)
-        # image might need to be cropped and converted to RGB first
-        analysis = self.analysis_class(self.image)
+        # make image suitable for analysis
+        analysis_image = image_for_analysis(self.image)
+        analysis = self.analysis_class(analysis_image)
+
+        # filter visualisations
         for layer in selected_layers:
             activated_filters = analysis.get_most_activated_filters(
                 layer, filter_column_length * filter_row_length
             )
             results_dto.add_layer_filters(layer, activated_filters)
+
+        # saliency map
+        saliency_map = analysis.get_saliency_map()
+        results_dto.add_saliency_map(saliency_map)
+
+        # predictions
+
         self.new_analysis_signal.emit(results_dto)

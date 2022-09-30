@@ -227,6 +227,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         """
         super().__init__(img)
         time.sleep(delay)
+        self.image = img
 
     def get_most_activated_filters(
         self, layer_string: str, n: int
@@ -263,7 +264,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
         """
-        pass
+        return np.clip(3 * (self.image - 128) + 128, 0, 255)
 
     def get_class_predictions(
         self, n_predictions: int, n_images: int

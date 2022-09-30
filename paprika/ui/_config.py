@@ -21,10 +21,10 @@ german_colour = "#4b4b4b"
 english_colour = "#212121"
 
 # screen number for each action
-screen_nr_camera_feed = 1
-screen_nr_lower_filters = 0
-screen_nr_higher_filters = 2
-screen_nr_predictions = 3
+screen_nr_camera_feed = 0
+screen_nr_lower_filters = 2
+screen_nr_higher_filters = 3
+screen_nr_predictions = 1
 
 selected_layers = ["mixed3b", "mixed4b", "mixed4e", "mixed5b"]  # all layers to be shown
 
@@ -38,4 +38,13 @@ frozen_camera_english_text = "The image that is currently being analysed"
 running_camera_german_text = "Der aktuelle Kamera-Feed"
 running_camera_english_text = "The current camera feed"
 
+
 # text for screens with lower and higher filters
+
+# text for screen with predictions
+def saliency_map_german_text(prediction: str):
+    return f"Wie hat die KI das als {prediction} klassifiziert?"
+
+
+def saliency_map_english_text(prediction: str):
+    return f"How did the AI classify this as {prediction}?"
