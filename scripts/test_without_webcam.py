@@ -29,13 +29,13 @@ preprocess_tensor = transforms.Compose(
 img = np.asarray(Image.open('test_images/remote_control.jpg'))
 pil_img = Image.fromarray(img.copy())
 im_cropped = preprocess_image(pil_img)
-im_tensor = preprocess_tensor(im_cropped).unsqueeze(0)
+#im_tensor = preprocess_tensor(im_cropped).unsqueeze(0)
 
-print('label',(Inceptionv1Analysis(im_tensor).get_class_predictions(3,1))[0].label)
+print('label',(Inceptionv1Analysis(im_cropped).get_class_predictions(3,1))[0].label)
 
-print('score', (Inceptionv1Analysis(im_tensor).get_class_predictions(3,1))[0].score)
-print('filters',Inceptionv1Analysis(im_tensor).get_most_activated_filters('mixed3a',3))
-map = Inceptionv1Analysis(im_tensor).get_saliency_map(im_cropped)
+print('score', (Inceptionv1Analysis(im_cropped).get_class_predictions(3,1))[0].score)
+print('filters',Inceptionv1Analysis(im_cropped).get_most_activated_filters('mixed3a',3))
+map = Inceptionv1Analysis(im_cropped).get_saliency_map()
 plt.imshow(map)
 plt.savefig("test_images/testNew.jpg")
 while True:
