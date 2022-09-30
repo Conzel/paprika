@@ -1,3 +1,4 @@
+import random
 import sys
 
 from PyQt5.QtCore import QObject
@@ -21,21 +22,23 @@ class UserInterface(QObject):
         self.app = QApplication(sys.argv)
 
         self.analysis_class = analysis_class
-
-        # set up threads that capture camera images and connect to their signal
         self.camera = camera
-        self.running_camera_thread = RunningCameraThread(self, self.camera)
-        self.running_camera_thread.new_capture_signal.connect(
+
+        # set up the two threads that capture camera images and connect to their signal
+        self.running_camera_thread = QThread()
+        self.running_camera_worker = RunningCameraWorker(self.camera)
+        self.running_camera_worker.moveToThread(self.running_camera_thread)
+        self.running_camera_worker.new_capture_signal.connect(
             self.on_new_running_capture
         )
-        self.frozen_camera_thread = FrozenCameraThread(
-            self, self.camera, frozen_camera_refresh_seconds
+        self.running_camera_thread.started.connect(self.running_camera_worker.start)
+        self.frozen_camera_thread = QThread()
+        self.frozen_camera_worker = FrozenCameraWorker(
+            self.camera, frozen_camera_refresh_seconds
         )
-        self.frozen_camera_thread.new_capture_signal.connect(self.on_new_frozen_capture)
-
-        # set up thread that captures the ML analysis and connect to its signal
-        self.analysis_thread = AnalysisThread(self, self.analysis_class)
-        self.analysis_thread.new_analysis_signal.connect(self.on_new_analysis)
+        self.frozen_camera_worker.moveToThread(self.frozen_camera_thread)
+        self.frozen_camera_worker.new_capture_signal.connect(self.on_new_frozen_capture)
+        self.frozen_camera_thread.started.connect(self.frozen_camera_worker.start)
 
         # create labels for the two cameras
         self.running_camera_label = QLabel()
@@ -63,6 +66,10 @@ class UserInterface(QObject):
             quit_shortcut = QShortcut(QKeySequence("Ctrl+Q"), screen_widget)
             quit_shortcut.activated.connect(self.app.quit)
 
+        # run the two camera feed threads
+        self.running_camera_thread.start()
+        self.frozen_camera_thread.start()
+
     def init_screen_camera_feed(self):
         # add the two camera feeds to a layout
         screen_widget = self.screen_widgets[screen_nr_camera_feed]
@@ -81,10 +88,6 @@ class UserInterface(QObject):
         )
         layout.addLayout(frozen_camera_layout, 0, 0, Qt.AlignCenter)
         layout.addLayout(running_camera_layout, 1, 0, Qt.AlignCenter)
-
-        # run the two camera feed threads
-        self.running_camera_thread.run()
-        self.frozen_camera_thread.run()
 
     def init_screen_lower_filters(self):
         # add the filter visualisations to a layout
@@ -118,14 +121,41 @@ class UserInterface(QObject):
         pass
 
     def on_new_running_capture(self, image: np.ndarray):
+        """
+        Slot for when a new running camera capture is obtained.
+        It displays the new image.
+        """
         pixmap = camera_image_to_pixmap(image)
         pixmap = resized_pixmap(pixmap, camera_capture_size)
         self.running_camera_label.setPixmap(pixmap)
 
     def on_new_frozen_capture(self, image: np.ndarray):
-        self.analysis_thread.compute_everything(image)
+        """
+        Slot for when a new frozen camera capture is obtained.
+        It starts a thread for computing the new ML analysis.
+        """
+        self.analysis_thread = QThread()
+        self.analysis_worker = AnalysisWorker(self.analysis_class, image)
+        self.analysis_worker.moveToThread(self.analysis_thread)
+        self.analysis_worker.new_analysis_signal.connect(self.on_new_analysis)
+        self.analysis_thread.started.connect(self.analysis_worker.start)
+
+        # signals and slots for deleting the worker and the thread
+        self.analysis_worker.new_analysis_signal.connect(self.analysis_thread.quit)
+        self.analysis_worker.new_analysis_signal.connect(
+            self.analysis_worker.deleteLater
+        )
+        self.analysis_worker.new_analysis_signal.connect(
+            self.analysis_thread.deleteLater
+        )
+
+        self.analysis_thread.start()
 
     def on_new_analysis(self, analysis_dto: AnalysisResultsDTO):
+        """
+        Slot for when a new ML analysis is obtained.
+        It changes the elements obtained from the analysis as well as the frozen camera image.
+        """
         # set camera feed to new capture
         image = analysis_dto.original_image
         pixmap = camera_image_to_pixmap(image)

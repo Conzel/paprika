@@ -221,12 +221,12 @@ class DummyAnalysis(NeuralNetworkAnalysis):
     Returns dummy data.
     """
 
-    def __init__(self, img: np.ndarray, delay: int = 0):
+    def __init__(self, img: np.ndarray, delay: int = 2):
         """
-        delay: the number of seconds of delay added in all of the class's methods
+        Initialisation sleeps for delay seconds.
         """
         super().__init__(img)
-        self.delay = delay
+        time.sleep(delay)
 
     def get_most_activated_filters(
         self, layer_string: str, n: int
@@ -241,7 +241,6 @@ class DummyAnalysis(NeuralNetworkAnalysis):
 
         The elements are ordered by filter_activation in decreasing order.
         """
-        time.sleep(self.delay)
         filters = []
         folder_path = "../" + visualisations_relative_path
         nr_filters = filter_numbers_per_layer[layer_string]
