@@ -71,12 +71,11 @@ class BufferlessVideoCapture(Camera):
 
 class DummyCamera(Camera):
     """
-    A dummy that always returns a 1080 x 1920 x 3 black image.
+    A dummy that always returns a new random 1080 x 1920 x 3 image.
     """
 
     def __init__(self, name: Union[str, int]):
         super().__init__()
-        self.black_image = np.zeros((1080, 1920, 3), dtype="uint8")
 
     def read(self) -> np.ndarray:
-        return self.black_image
+        return np.random.random((1080, 1920, 3)) * 255

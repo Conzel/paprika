@@ -21,8 +21,8 @@ german_colour = "#4b4b4b"
 english_colour = "#212121"
 
 # screen number for each action
-screen_nr_camera_feed = 0
-screen_nr_lower_filters = 1
+screen_nr_camera_feed = 1
+screen_nr_lower_filters = 0
 screen_nr_higher_filters = 2
 screen_nr_predictions = 3
 

@@ -11,6 +11,8 @@ opencv-python = "^4.6.0.66"
 torch = {url="https://download.pytorch.org/whl/cu116/torch-1.12.1%2Bcu116-cp39-cp39-linux_x86_64.whl"}
 torchvision = {url="https://download.pytorch.org/whl/cu116/torchvision-0.13.1%2Bcu116-cp39-cp39-linux_x86_64.whl"}
 PyQt5 = "^5.15.7"
+grad-cam = {git = "https://github.com/jacobgil/pytorch-grad-cam.git"}
+torch-lucent = {git = "https://github.com/greentfrapp/lucent.git"}
 
 [build-system]
 requires = ["poetry-core"]
