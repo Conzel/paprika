@@ -10,6 +10,7 @@ horizontal_spacing_filters = 15
 
 frozen_camera_refresh_seconds = 3
 
+huge_font_size = 24
 large_font_size = 20
 medium_font_size = 16
 small_font_size = 12
@@ -31,6 +32,9 @@ selected_layers = ["mixed3b", "mixed4b", "mixed4e", "mixed5b"]  # all layers to 
 layers_per_screen = 2  # number of layers shown in one screen
 filter_column_length = 6  # number of filters shown in one column
 filter_row_length = 2  # number of filters shown in one row
+
+nr_predictions = 6  # the number of top predictions to show
+nr_imagenet_images = 3  # the number of imagenet images to show per prediction
 
 # text for screen with camera feed
 frozen_camera_german_text = "Das Bild, das gerade analysiert wird"

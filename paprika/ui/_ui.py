@@ -54,10 +54,19 @@ class UserInterface(QObject):
                 self.filter_image_labels[layer].append(QLabel())
                 self.filter_text_labels[layer].append(QLabel())
 
-        # create labels for the predictions
+        # create labels for the saliency map
         self.saliency_image_label = QLabel()
         self.saliency_english_label = QLabel()
         self.saliency_german_label = QLabel()
+
+        # create labels for the predictions
+        self.prediction_score_labels = []
+        self.prediction_german_labels = []
+        self.prediction_english_labels = []
+        for _ in range(nr_predictions):
+            self.prediction_score_labels.append(QLabel())
+            self.prediction_german_labels.append(QLabel())
+            self.prediction_english_labels.append(QLabel())
 
         # set up the layout on all of the 4 screens
         self.screen_widgets = get_full_screen_widgets(self.app)
@@ -139,7 +148,18 @@ class UserInterface(QObject):
             self.saliency_german_label,
             self.saliency_english_label,
         )
+        predictions_layout = score_and_text_grid(
+            self.prediction_score_labels,
+            self.prediction_german_labels,
+            self.prediction_english_labels,
+            large_font_size,
+            huge_font_size,
+            medium_font_size,
+            large_font_size,
+        )
+
         layout.addLayout(saliency_layout, 0, 0, Qt.AlignCenter)
+        layout.addLayout(predictions_layout, 1, 0, Qt.AlignVCenter)
 
     def on_new_running_capture(self, image: np.ndarray):
         """
@@ -194,6 +214,15 @@ class UserInterface(QObject):
         pixmap = image_to_pixmap(saliency_image)
         pixmap = resized_pixmap(pixmap, camera_capture_size)
         self.saliency_image_label.setPixmap(pixmap)
+
+        # update the predictions
+        class_predictions = analysis_dto.class_predictions
+        for i in range(nr_predictions):
+            prediction = class_predictions[i]
+            self.prediction_score_labels[i].setText(f"{round(prediction.score, 1)}%")
+            english_text, german_text = prediction.label.split("|")
+            self.prediction_german_labels[i].setText(german_text)
+            self.prediction_english_labels[i].setText(english_text)
 
     def run(self):
         self.app.exec_()

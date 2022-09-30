@@ -18,6 +18,7 @@ class AnalysisResultsDTO:
         self.layers = layers
         self.layer_filters = {}
         self.saliency_map = None
+        self.class_predictions = []
 
     def add_layer_filters(self, layer, filters):
         self.layer_filters[layer] = filters
@@ -105,5 +106,7 @@ class AnalysisWorker(QObject):
         results_dto.add_saliency_map(saliency_map)
 
         # predictions
+        predictions = analysis.get_class_predictions(nr_predictions, nr_imagenet_images)
+        results_dto.class_predictions = predictions
 
         self.new_analysis_signal.emit(results_dto)

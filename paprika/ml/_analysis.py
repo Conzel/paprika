@@ -1,3 +1,4 @@
+import csv
 import os
 import random
 import time
@@ -39,7 +40,7 @@ class ClassPrediction:
     def __init__(self, label: str, score: float, similar_images: List[str]):
         self.label = label
         self.score = score
-        self.similar_images = []
+        self.similar_images = similar_images
 
 
 class NeuralNetworkAnalysis(ABC):
@@ -62,7 +63,6 @@ class NeuralNetworkAnalysis(ABC):
     def get_most_activated_filters(
         self, layer_string: str, n: int
     ) -> List[Tuple[str, int, float]]:
-
         """
         Returns a list of length n containing (image_path, filter_id, filter_activation)
         elements, where
@@ -87,7 +87,6 @@ class NeuralNetworkAnalysis(ABC):
     def get_class_predictions(
         self, n_predictions: int, n_images: int
     ) -> List[ClassPrediction]:
-
         """
         Returns a list of the n_predictions most likely classes for the image.
         Each class contains the score (percentage), the label (name), and a list of n_images similar images.
@@ -214,7 +213,6 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         )
         class_predictions = []
         for idx in indices:
-
             class_prediction = ClassPrediction(
                 label=labelConverter()[
                     idx
@@ -232,7 +230,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
     Returns dummy data.
     """
 
-    def __init__(self, img: np.ndarray, delay: int = 2):
+    def __init__(self, img: np.ndarray, delay: int = 0):
         """
         Initialisation sleeps for delay seconds.
         """
@@ -274,9 +272,9 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         """
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
+        Returns RGB image with values in [0, 255].
         """
-        img = self.image * 255
-        return np.clip(1 * (img - 128) + 128, 0, 255)
+        return np.clip(4 * (self.image - 128) + 128, 0, 255)
 
     def get_class_predictions(
         self, n_predictions: int, n_images: int
@@ -287,4 +285,15 @@ class DummyAnalysis(NeuralNetworkAnalysis):
 
         The images are returned in descending order of likelihood.
         """
-        pass
+        class_predictions = []
+        possible_activations = np.linspace(0.08, 4.532).tolist()
+        activations = random.choices(possible_activations, k=n_predictions)
+        activations.sort(reverse=True)
+        with open("../paprika/ml/translations.csv", encoding="utf-8", newline="") as f:
+            reader = csv.reader(f)
+            classes = list(reader)
+        for activation in activations:
+            prediction_class = random.choice(classes)
+            label = f"{prediction_class[0]}|{prediction_class[1]}"
+            class_predictions.append(ClassPrediction(label, activation, []))
+        return class_predictions
