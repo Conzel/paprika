@@ -164,7 +164,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         return filters
 
-    def get_saliency_map(self) -> np.ndarray:
+    def get_saliency_map(self, im_cropped) -> np.ndarray:
         """
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
@@ -175,13 +175,15 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         cam = GradCAMPlusPlus(
             model=self.model, target_layers=target_layers, use_cuda=False
         )
-        targets = [ClassifierOutputTarget(281)]
+        #targets = [ClassifierOutputTarget(281)]
         # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
-        grayscale_cam = cam(input_tensor=self.image, targets=None, eigen_smooth=True)
+        img_to_tensor = T.PILToTensor()(im_cropped)
+        input_tensor = img_to_tensor[None, :] / 255.0
+        grayscale_cam = cam(input_tensor=input_tensor, targets=None, eigen_smooth=False, aug_smooth=True)
         # In this example grayscale_cam has only one image in the batch:
         grayscale_cam = grayscale_cam[0, :]
-        rgb_image = np.asarray(T.ToPILImage()(self.image.squeeze(0))) / 255.0
-        visualization = show_cam_on_image(rgb_image, grayscale_cam, use_rgb=True)
+        rgb_image = np.asarray(T.ToPILImage()(img_to_tensor))/ 255.0
+        visualization = show_cam_on_image(rgb_image, grayscale_cam)
         return visualization
 
     def get_class_predictions(
