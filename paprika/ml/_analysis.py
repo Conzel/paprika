@@ -117,7 +117,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
     def __init__(self, img: np.ndarray):
         """Performs the analysis on the given image."""
         self.model = inceptionv1(pretrained=True).eval()
-        self.image = img
+        self.image = Image.fromarray(img)
         self.preprocess_image = T.Compose(
             [
                 T.ToTensor(),
@@ -192,7 +192,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         # In this example grayscale_cam has only one image in the batch:
         grayscale_cam = grayscale_cam[0, :]
         rgb_image = np.asarray(T.ToPILImage()(img_to_tensor)) / 255.0
-        visualization = show_cam_on_image(rgb_image, grayscale_cam)
+        visualization = show_cam_on_image(rgb_image, grayscale_cam, use_rgb=True)
 
         return visualization
 
@@ -213,6 +213,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
             .detach()
             .numpy()
         )
+        print(len(predictions))
         class_predictions = []
         for idx in indices:
             class_prediction = ClassPrediction(
