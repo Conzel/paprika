@@ -257,8 +257,9 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         possible_activations = np.linspace(0.08, 4.532).tolist()
         activations = random.choices(possible_activations, k=n)
         activations.sort(reverse=True)
+        filter_ids = random.sample(range(0, nr_filters), k=n)
         for i in range(n):
-            filter_id = random.randint(0, nr_filters - 1)
+            filter_id = filter_ids[i]
             image_path = os.path.abspath(
                 os.path.expanduser(
                     os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")

@@ -60,8 +60,9 @@ def image_for_analysis_pil_image(image: np.ndarray) -> Image.Image:
 def image_for_analysis(image: np.ndarray) -> np.ndarray:
     """
     Makes image suitable for ML analysis.
-    It converts from BGR format to RGB, crops in the middle and
-    resizes to 224*224. RGB values are in [0, 255].
+    It converts from BGR format to RGB, crops in the middle,
+    resizes to 224*224 and converts to np.uint8.
+    RGB values are in [0, 255].
 
     image: in BGR format, values in [0, 255]
     """
@@ -70,6 +71,7 @@ def image_for_analysis(image: np.ndarray) -> np.ndarray:
     analysis_image = analysis_image / 255
     analysis_image = resize(analysis_image, (224, 224), anti_aliasing=True)
     analysis_image = analysis_image * 255
+    analysis_image = np.require(analysis_image, np.uint8, "C")
     return analysis_image
 
 
