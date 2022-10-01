@@ -25,20 +25,19 @@ class UserInterface(QObject):
         self.camera = camera
 
         # set up the two threads that capture camera images and connect to their signal
-        self.running_camera_thread = QThread()
+        self.running_camera_thread = QThread(parent=self)
         self.running_camera_worker = RunningCameraWorker(self.camera)
         self.running_camera_worker.moveToThread(self.running_camera_thread)
         self.running_camera_worker.new_capture_signal.connect(
             self.on_new_running_capture
         )
         self.running_camera_thread.started.connect(self.running_camera_worker.start)
-        self.frozen_camera_thread = QThread()
-        self.frozen_camera_worker = FrozenCameraWorker(
-            self.camera, frozen_camera_refresh_seconds
-        )
-        self.frozen_camera_worker.moveToThread(self.frozen_camera_thread)
-        self.frozen_camera_worker.new_capture_signal.connect(self.on_new_frozen_capture)
-        self.frozen_camera_thread.started.connect(self.frozen_camera_worker.start)
+
+        self.analysis_thread = QThread(parent=self)
+        self.analysis_worker = AnalysisWorker(self.camera, frozen_camera_refresh_seconds, self.analysis_class)
+        self.analysis_worker.moveToThread(self.analysis_thread)
+        self.analysis_worker.new_analysis_signal.connect(self.on_new_analysis)
+        self.analysis_thread.started.connect(self.analysis_worker.start)
 
         # create labels for the two cameras
         self.running_camera_label = QLabel()
@@ -86,7 +85,7 @@ class UserInterface(QObject):
 
         # run the two camera feed threads
         self.running_camera_thread.start()
-        self.frozen_camera_thread.start()
+        self.analysis_thread.start()
 
     def init_screen_camera_feed(self):
         # add the two camera feeds to a layout
@@ -174,20 +173,6 @@ class UserInterface(QObject):
         pixmap = resized_pixmap(pixmap, camera_capture_size)
         self.running_camera_label.setPixmap(pixmap)
 
-    def on_new_frozen_capture(self, image: np.ndarray):
-        """
-        Slot for when a new frozen camera capture is obtained.
-        It starts a thread for computing the new ML analysis.
-        """
-        self.analysis_thread = QThread()
-        self.analysis_worker = AnalysisWorker(self.analysis_class, image)
-        self.analysis_worker.moveToThread(self.analysis_thread)
-        self.analysis_worker.new_analysis_signal.connect(self.on_new_analysis)
-        self.analysis_thread.started.connect(self.analysis_worker.start)
-
-        self.analysis_worker.new_analysis_signal.connect(self.analysis_thread.quit)
-        self.analysis_thread.start()
-
     def on_new_analysis(self, analysis_dto: AnalysisResultsDTO):
         """
         Slot for when a new ML analysis is obtained.
@@ -225,6 +210,7 @@ class UserInterface(QObject):
             prediction = class_predictions[i]
             self.prediction_score_labels[i].setText(f"{round(prediction.score, 1)}%")
             english_text, german_text = prediction.label.split("|")
+            # english_text, german_text = prediction.label, prediction.label
             self.prediction_german_labels[i].setText(german_text)
             self.prediction_english_labels[i].setText(english_text)
 
