@@ -15,13 +15,14 @@ def save_image(img: np.ndarray, name: str):
 
 
 camera = BufferlessVideoCapture(0)
+# camera = BufferlessVideoCapture(-1)
 camera_image = camera.read()
 # check image_for_analysis function for the specific formatting of the image
 image_to_analyse = image_for_analysis(camera_image)
 save_image(image_to_analyse, "image_to_analyse")
 
-analysis = DummyAnalysis(image_to_analyse)
-# analysis = Inceptionv1Analysis(image_to_analyse)
+# analysis = DummyAnalysis(image_to_analyse)
+analysis = Inceptionv1Analysis(image_to_analyse)
 
 # saliency_map should be an RGB-formatted ndarray with values in [0, 255]
 saliency_map = analysis.get_saliency_map()

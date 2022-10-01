@@ -213,14 +213,13 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
             .detach()
             .numpy()
         )
-        print(len(predictions))
         class_predictions = []
         for idx in indices:
             class_prediction = ClassPrediction(
                 label=labelConverter()[
                     idx
                 ],  # labelConverter() needed for lucent implementation
-                score=predictions[idx].item(),
+                score=predictions[idx].item() * 100,
                 similar_images=None,
             )
             class_predictions.append(class_prediction)

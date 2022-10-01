@@ -8,7 +8,7 @@ filter_size = 218
 vertical_spacing_filters = 20
 horizontal_spacing_filters = 15
 
-frozen_camera_refresh_seconds = 3
+frozen_camera_refresh_seconds = 1
 
 huge_font_size = 24
 large_font_size = 20
@@ -24,8 +24,8 @@ english_colour = "#212121"
 # screen number for each action
 screen_nr_camera_feed = 0
 screen_nr_lower_filters = None
-screen_nr_higher_filters = None
-screen_nr_predictions = 1
+screen_nr_higher_filters = 1
+screen_nr_predictions = None
 
 selected_layers = ["mixed3b", "mixed4b", "mixed4e", "mixed5b"]  # all layers to be shown
 

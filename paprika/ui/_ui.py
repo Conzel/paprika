@@ -209,8 +209,8 @@ class UserInterface(QObject):
         for i in range(nr_predictions):
             prediction = class_predictions[i]
             self.prediction_score_labels[i].setText(f"{round(prediction.score, 1)}%")
-            english_text, german_text = prediction.label.split("|")
-            # english_text, german_text = prediction.label, prediction.label
+            # english_text, german_text = prediction.label.split("|")
+            english_text, german_text = prediction.label, prediction.label
             self.prediction_german_labels[i].setText(german_text)
             self.prediction_english_labels[i].setText(english_text)
 
