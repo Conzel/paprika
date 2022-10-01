@@ -138,6 +138,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         The elements are ordered by filter_activation in decreasing order.
         """
+        # calculate layer activations
         layer_number = filter_strings_to_numbers[layer_string]
         layer = list(self.model.children())[layer_number]
         activations = SaveFeatures(layer)
@@ -160,7 +161,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
             filter_id = most_activated_filters[i]
             filter_activation = (
                 mean_act[filter_id] / torch.sum(torch.tensor(mean_act))
-            ).item()
+            ).item() * 100
             image_path = os.path.abspath(
                 os.path.expanduser(
                     os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
@@ -192,6 +193,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         grayscale_cam = grayscale_cam[0, :]
         rgb_image = np.asarray(T.ToPILImage()(img_to_tensor)) / 255.0
         visualization = show_cam_on_image(rgb_image, grayscale_cam)
+
         return visualization
 
     def get_class_predictions(
