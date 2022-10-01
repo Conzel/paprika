@@ -8,7 +8,7 @@ filter_size = 218
 vertical_spacing_filters = 20
 horizontal_spacing_filters = 15
 
-frozen_camera_refresh_seconds = 1
+analysis_refresh_seconds = 1
 
 huge_font_size = 24
 large_font_size = 20

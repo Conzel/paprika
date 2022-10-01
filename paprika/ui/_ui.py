@@ -34,7 +34,7 @@ class UserInterface(QObject):
         self.running_camera_thread.started.connect(self.running_camera_worker.start)
 
         self.analysis_thread = QThread(parent=self)
-        self.analysis_worker = AnalysisWorker(self.camera, frozen_camera_refresh_seconds, self.analysis_class)
+        self.analysis_worker = AnalysisWorker(self.camera, analysis_refresh_seconds, self.analysis_class)
         self.analysis_worker.moveToThread(self.analysis_thread)
         self.analysis_worker.new_analysis_signal.connect(self.on_new_analysis)
         self.analysis_thread.started.connect(self.analysis_worker.start)
