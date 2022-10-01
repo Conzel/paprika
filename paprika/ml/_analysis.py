@@ -206,20 +206,24 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         The images are returned in descending order of likelihood.
         """
         image = self.preprocess_image(self.image).unsqueeze(0)
-        predictions = self.model(image)[0]
+        predictions = self.model(image)[0][1:-7]
         indices = (
             torch.topk(torch.tensor(list(predictions)), n_predictions)
             .indices.cpu()
             .detach()
             .numpy()
         )
-        class_predictions = []
+
+
+
+        class_predictions=[]
         for idx in indices:
             class_prediction = ClassPrediction(
                 label=labelConverter()[
-                    idx
+                    idx+1
                 ],  # labelConverter() needed for lucent implementation
-                score=predictions[idx].item() * 100,
+
+                score=predictions[idx].item()/sum(predictions).item()*100,
                 similar_images=None,
             )
             class_predictions.append(class_prediction)
