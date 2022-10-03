@@ -212,11 +212,11 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         # Create Empty Dict with all Categories in it:
         translated_classes = self.create_translation_class_dict()
 
+        print("adding percentages")
         # For every prediction: add the percentage to the translated class
-        for idx in range(0, len(predictions)):
+        for idx in range(1, 1001):
             label = labelConverter()[
                 idx
-                + 1  # idx+1 because predictions start with index 0 but labels with index 1
             ]
             prediction = predictions[idx]
             translated_class = translations[label]
@@ -239,13 +239,12 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
                     similar_images=None,
                 )
                 final_predictions.append(class_prediction)
-                i += 1
+                i = i + 1
             else:
                 break
-
         return final_predictions
 
-    def read_csv(self, file_path) -> Dict[str]:
+    def read_csv(self, file_path) -> Dict:
         """
         Reads all translations from translations.csv and puts them into a dictionary
 
