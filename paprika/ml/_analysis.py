@@ -176,18 +176,25 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
         """
-        target_layers = [list(self.model.children())[136]]  # lucent implementation
+        target_layers = [
+            list(self.model.children())[136],
+            list(self.model.children())[119],
+            list(self.model.children())[128],
+        ]  # lucent implementation
 
         # Construct the CAM object once, and then re-use it on many images:
         cam = GradCAMPlusPlus(
             model=self.model, target_layers=target_layers, use_cuda=False
         )
-        # targets = [ClassifierOutputTarget(281)]
+        targets = None  # [ClassifierOutputTarget(1000)]
         # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
         img_to_tensor = T.PILToTensor()(self.image)
         input_tensor = img_to_tensor[None, :] / 255.0
         grayscale_cam = cam(
-            input_tensor=input_tensor, targets=None, eigen_smooth=False, aug_smooth=True
+            input_tensor=input_tensor,
+            targets=targets,
+            eigen_smooth=False,
+            aug_smooth=False,
         )
         # In this example grayscale_cam has only one image in the batch:
         grayscale_cam = grayscale_cam[0, :]
@@ -214,16 +221,13 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
             .numpy()
         )
 
-
-
-        class_predictions=[]
+        class_predictions = []
         for idx in indices:
             class_prediction = ClassPrediction(
                 label=labelConverter()[
-                    idx+1
+                    idx + 1
                 ],  # labelConverter() needed for lucent implementation
-
-                score=predictions[idx].item()/sum(predictions).item()*100,
+                score=predictions[idx].item() / sum(predictions).item() * 100,
                 similar_images=None,
             )
             class_predictions.append(class_prediction)
