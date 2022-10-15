@@ -25,20 +25,19 @@ class UserInterface(QObject):
         self.camera = camera
 
         # set up the two threads that capture camera images and connect to their signal
-        self.running_camera_thread = QThread()
+        self.running_camera_thread = QThread(parent=self)
         self.running_camera_worker = RunningCameraWorker(self.camera)
         self.running_camera_worker.moveToThread(self.running_camera_thread)
         self.running_camera_worker.new_capture_signal.connect(
             self.on_new_running_capture
         )
         self.running_camera_thread.started.connect(self.running_camera_worker.start)
-        self.frozen_camera_thread = QThread()
-        self.frozen_camera_worker = FrozenCameraWorker(
-            self.camera, frozen_camera_refresh_seconds
-        )
-        self.frozen_camera_worker.moveToThread(self.frozen_camera_thread)
-        self.frozen_camera_worker.new_capture_signal.connect(self.on_new_frozen_capture)
-        self.frozen_camera_thread.started.connect(self.frozen_camera_worker.start)
+
+        self.analysis_thread = QThread(parent=self)
+        self.analysis_worker = AnalysisWorker(self.camera, analysis_refresh_seconds, self.analysis_class)
+        self.analysis_worker.moveToThread(self.analysis_thread)
+        self.analysis_worker.new_analysis_signal.connect(self.on_new_analysis)
+        self.analysis_thread.started.connect(self.analysis_worker.start)
 
         # create labels for the two cameras
         self.running_camera_label = QLabel()
@@ -54,17 +53,30 @@ class UserInterface(QObject):
                 self.filter_image_labels[layer].append(QLabel())
                 self.filter_text_labels[layer].append(QLabel())
 
-        # create labels for the predictions
+        # create labels for the saliency map
         self.saliency_image_label = QLabel()
         self.saliency_english_label = QLabel()
         self.saliency_german_label = QLabel()
 
-        # set up the layout on all of the 4 screens
+        # create labels for the predictions
+        self.prediction_score_labels = []
+        self.prediction_german_labels = []
+        self.prediction_english_labels = []
+        for _ in range(nr_predictions):
+            self.prediction_score_labels.append(QLabel())
+            self.prediction_german_labels.append(QLabel())
+            self.prediction_english_labels.append(QLabel())
+
+        # set up the layout on the 4 screens
         self.screen_widgets = get_full_screen_widgets(self.app)
-        self.init_screen_camera_feed()
-        self.init_screen_lower_filters()
-        self.init_screen_higher_filters()
-        self.init_screen_predictions()
+        if screen_nr_camera_feed is not None:
+            self.init_screen_camera_feed()
+        if screen_nr_lower_filters is not None:
+            self.init_screen_lower_filters()
+        if screen_nr_higher_filters is not None:
+            self.init_screen_higher_filters()
+        if screen_nr_predictions is not None:
+            self.init_screen_predictions()
 
         # add Ctrl+Q shortcut for quitting the app
         for screen_widget in self.screen_widgets:
@@ -73,7 +85,7 @@ class UserInterface(QObject):
 
         # run the two camera feed threads
         self.running_camera_thread.start()
-        self.frozen_camera_thread.start()
+        self.analysis_thread.start()
 
     def init_screen_camera_feed(self):
         # add the two camera feeds to a layout
@@ -139,7 +151,18 @@ class UserInterface(QObject):
             self.saliency_german_label,
             self.saliency_english_label,
         )
+        predictions_layout = score_and_text_grid(
+            self.prediction_score_labels,
+            self.prediction_german_labels,
+            self.prediction_english_labels,
+            large_font_size,
+            huge_font_size,
+            medium_font_size,
+            large_font_size,
+        )
+
         layout.addLayout(saliency_layout, 0, 0, Qt.AlignCenter)
+        layout.addLayout(predictions_layout, 1, 0, Qt.AlignVCenter)
 
     def on_new_running_capture(self, image: np.ndarray):
         """
@@ -149,20 +172,6 @@ class UserInterface(QObject):
         pixmap = camera_image_to_pixmap(image)
         pixmap = resized_pixmap(pixmap, camera_capture_size)
         self.running_camera_label.setPixmap(pixmap)
-
-    def on_new_frozen_capture(self, image: np.ndarray):
-        """
-        Slot for when a new frozen camera capture is obtained.
-        It starts a thread for computing the new ML analysis.
-        """
-        self.analysis_thread = QThread()
-        self.analysis_worker = AnalysisWorker(self.analysis_class, image)
-        self.analysis_worker.moveToThread(self.analysis_thread)
-        self.analysis_worker.new_analysis_signal.connect(self.on_new_analysis)
-        self.analysis_thread.started.connect(self.analysis_worker.start)
-
-        self.analysis_worker.new_analysis_signal.connect(self.analysis_thread.quit)
-        self.analysis_thread.start()
 
     def on_new_analysis(self, analysis_dto: AnalysisResultsDTO):
         """
@@ -194,6 +203,16 @@ class UserInterface(QObject):
         pixmap = image_to_pixmap(saliency_image)
         pixmap = resized_pixmap(pixmap, camera_capture_size)
         self.saliency_image_label.setPixmap(pixmap)
+
+        # update the predictions
+        class_predictions = analysis_dto.class_predictions
+        for i in range(nr_predictions):
+            prediction = class_predictions[i]
+            self.prediction_score_labels[i].setText(f"{round(prediction.score, 1)}%")
+            # english_text, german_text = prediction.label.split("|")
+            english_text, german_text = prediction.label, prediction.label
+            self.prediction_german_labels[i].setText(german_text)
+            self.prediction_english_labels[i].setText(english_text)
 
     def run(self):
         self.app.exec_()

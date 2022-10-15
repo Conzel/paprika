@@ -44,7 +44,7 @@ def bgr_to_rgb(image: np.ndarray) -> np.ndarray:
     return image[:, :, [2, 1, 0]]
 
 
-def image_for_analysis(image: np.ndarray) -> np.ndarray:
+def image_for_analysis_pil_image(image: np.ndarray) -> Image.Image:
     """
     Makes image suitable for ML analysis.
     It converts from BGR format to RGB, crops in the middle,
@@ -53,13 +53,33 @@ def image_for_analysis(image: np.ndarray) -> np.ndarray:
     analysis_image = bgr_to_rgb(image)
     analysis_image = middle_cropped_image(analysis_image)
     analysis_image = resize(analysis_image, (224, 224), anti_aliasing=True)
-    analysis_image = Image.fromarray(analysis_image, mode='RGB')
+    analysis_image = Image.fromarray(analysis_image, mode="RGB")
+    return analysis_image
+
+
+def image_for_analysis(image: np.ndarray) -> np.ndarray:
+    """
+    Makes image suitable for ML analysis.
+    It converts from BGR format to RGB, crops in the middle,
+    resizes to 224*224 and converts to np.uint8.
+    RGB values are in [0, 255].
+
+    image: in BGR format, values in [0, 255]
+    """
+    analysis_image = bgr_to_rgb(image)
+    analysis_image = middle_cropped_image(analysis_image)
+    analysis_image = analysis_image / 255
+    analysis_image = resize(analysis_image, (224, 224), anti_aliasing=True)
+    analysis_image = analysis_image * 255
+    analysis_image = np.require(analysis_image, np.uint8, "C")
     return analysis_image
 
 
 def image_to_pixmap(image: np.ndarray) -> QPixmap:
     """
     Returns image as QPixmap.
+
+    image: in RGB format, values in [0, 255]
     """
     height, width, channel = image.shape
     bytes_per_line = 3 * width
@@ -71,7 +91,8 @@ def image_to_pixmap(image: np.ndarray) -> QPixmap:
 def camera_image_to_pixmap(captured_image: np.ndarray) -> QPixmap:
     """
     Returns captured_image as QPixmap in RGB format and cropped in the middle.
-    captured_image: in BGR format
+
+    captured_image: in BGR format, values in [0, 255]
     """
     cropped_image = middle_cropped_image(captured_image)
     cropped_image = bgr_to_rgb(cropped_image)
@@ -138,4 +159,44 @@ def image_and_text_grid(
             i += 1
             grid_layout.addLayout(v_layout, column, row)
     grid_layout.setHorizontalSpacing(horizontal_spacing_filters)
+    return grid_layout
+
+
+def score_and_text_grid(
+    score_labels,
+    german_labels,
+    english_labels,
+    font_size_score,
+    larger_font_size_score,
+    font_size_label,
+    larger_font_size_label,
+) -> QGridLayout:
+    """
+    Returns a QGridLayout with nr_prediction rows.
+    Each row contains the score for the label and its name in German and in English.
+    """
+    grid_layout = QGridLayout()
+    for i in range(nr_predictions):
+        h_layout = QHBoxLayout()
+        h_layout.addSpacing(100)
+        h_layout.addWidget(score_labels[i], stretch=1)
+        v_layout = QVBoxLayout()
+        v_layout.addSpacing(20)
+        v_layout.addWidget(german_labels[i])
+        v_layout.addWidget(english_labels[i])
+        v_layout.addSpacing(20)
+        h_layout.addLayout(v_layout, stretch=5)
+        grid_layout.addLayout(h_layout, i, 0)
+
+        if i != 0:
+            score_labels[i].setFont(QFont(german_font, font_size_score))
+            german_labels[i].setFont(QFont(german_font, font_size_label))
+            english_labels[i].setFont(QFont(english_font, font_size_label))
+        else:
+            score_labels[i].setFont(QFont(german_font, larger_font_size_score))
+            german_labels[i].setFont(QFont(german_font, larger_font_size_label))
+            english_labels[i].setFont(QFont(english_font, larger_font_size_label))
+        score_labels[i].setStyleSheet(f"color: {german_colour}")
+        german_labels[i].setStyleSheet(f"color: {german_colour}")
+        english_labels[i].setStyleSheet(f"color: {english_colour}")
     return grid_layout

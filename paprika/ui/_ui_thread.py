@@ -18,6 +18,7 @@ class AnalysisResultsDTO:
         self.layers = layers
         self.layer_filters = {}
         self.saliency_map = None
+        self.class_predictions = []
 
     def add_layer_filters(self, layer, filters):
         self.layer_filters[layer] = filters
@@ -49,48 +50,26 @@ class RunningCameraWorker(QObject):
         self.new_capture_signal.emit(camera_image)
 
 
-class FrozenCameraWorker(QObject):
-    """
-    Worker signaling new images for the frozen camera feed.
-    It has to be run in a separate QThread.
-    """
-
-    new_capture_signal = pyqtSignal(np.ndarray)
-
-    def __init__(self, camera, refresh_seconds):
-        super().__init__()
-        self.camera = camera
-        self.refresh_seconds = refresh_seconds * 1000
-
-    def start(self):
-        self.obtain_camera_capture()
-        self.timer = QTimer(self)
-        self.timer.setInterval(self.refresh_seconds)
-        self.timer.timeout.connect(self.obtain_camera_capture)
-        self.timer.start()
-
-    def obtain_camera_capture(self):
-        camera_image = self.camera.read()
-        self.new_capture_signal.emit(camera_image)
-
-
 class AnalysisWorker(QObject):
     """
-    Worker signaling new ML analysis of an image.
+    Worker capturing new frozen camera images and signaling new ML analyses.
     It has to be run in a separate QThread.
     """
 
     new_analysis_signal = pyqtSignal(AnalysisResultsDTO)
 
-    def __init__(self, analysis_class: NeuralNetworkAnalysis, image: np.ndarray):
+    def __init__(self, camera, refresh_seconds, analysis_class: NeuralNetworkAnalysis):
         super().__init__()
         self.analysis_class = analysis_class
-        self.image = image
+        self.camera = camera
+        self.refresh_mseconds = refresh_seconds * 1000
 
-    def start(self):
-        results_dto = AnalysisResultsDTO(self.image, selected_layers)
+    def obtain_new_analysis(self):
+        camera_image = self.camera.read()
+
+        results_dto = AnalysisResultsDTO(camera_image, selected_layers)
         # make image suitable for analysis
-        analysis_image = image_for_analysis(self.image)
+        analysis_image = image_for_analysis(camera_image)
         analysis = self.analysis_class(analysis_image)
 
         # filter visualisations
@@ -105,5 +84,14 @@ class AnalysisWorker(QObject):
         results_dto.add_saliency_map(saliency_map)
 
         # predictions
+        predictions = analysis.get_class_predictions(nr_predictions, nr_imagenet_images)
+        results_dto.class_predictions = predictions
 
         self.new_analysis_signal.emit(results_dto)
+
+    def start(self):
+        self.obtain_new_analysis()
+        self.timer = QTimer(self)
+        self.timer.setInterval(self.refresh_mseconds)
+        self.timer.timeout.connect(self.obtain_new_analysis)
+        self.timer.start()

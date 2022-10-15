@@ -1,3 +1,4 @@
+import csv
 import os
 import random
 import time
@@ -40,7 +41,7 @@ class ClassPrediction:
     def __init__(self, label: str, score: float, similar_images: List[str]):
         self.label = label
         self.score = score
-        self.similar_images = []
+        self.similar_images = similar_images
 
 
 class NeuralNetworkAnalysis(ABC):
@@ -63,7 +64,6 @@ class NeuralNetworkAnalysis(ABC):
     def get_most_activated_filters(
         self, layer_string: str, n: int
     ) -> List[Tuple[str, int, float]]:
-
         """
         Returns a list of length n containing (image_path, filter_id, filter_activation)
         elements, where
@@ -88,7 +88,6 @@ class NeuralNetworkAnalysis(ABC):
     def get_class_predictions(
         self, n_predictions: int, n_images: int
     ) -> List[ClassPrediction]:
-
         """
         Returns a list of the n_predictions most likely classes for the image.
         Each class contains the score (percentage), the label (name), and a list of n_images similar images.
@@ -119,7 +118,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
     def __init__(self, img: np.ndarray):
         """Performs the analysis on the given image."""
         self.model = inceptionv1(pretrained=True).eval()
-        self.image = img
+        self.image = Image.fromarray(img)
         self.preprocess_image = T.Compose(
             [
                 T.ToTensor(),
@@ -140,6 +139,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         The elements are ordered by filter_activation in decreasing order.
         """
+        # calculate layer activations
         layer_number = filter_strings_to_numbers[layer_string]
         layer = list(self.model.children())[layer_number]
         activations = SaveFeatures(layer)
@@ -162,7 +162,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
             filter_id = most_activated_filters[i]
             filter_activation = (
                 mean_act[filter_id] / torch.sum(torch.tensor(mean_act))
-            ).item()
+            ).item() * 100
             image_path = os.path.abspath(
                 os.path.expanduser(
                     os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
@@ -177,23 +177,31 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
         """
-        target_layers = [list(self.model.children())[136]]  # lucent implementation
+        target_layers = [
+            list(self.model.children())[136],
+            list(self.model.children())[119],
+            list(self.model.children())[128],
+        ]  # lucent implementation
 
         # Construct the CAM object once, and then re-use it on many images:
         cam = GradCAMPlusPlus(
             model=self.model, target_layers=target_layers, use_cuda=False
         )
-        # targets = [ClassifierOutputTarget(281)]
+        targets = None  # [ClassifierOutputTarget(1000)]
         # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
         img_to_tensor = T.PILToTensor()(self.image)
         input_tensor = img_to_tensor[None, :] / 255.0
         grayscale_cam = cam(
-            input_tensor=input_tensor, targets=None, eigen_smooth=False, aug_smooth=True
+            input_tensor=input_tensor,
+            targets=targets,
+            eigen_smooth=False,
+            aug_smooth=False,
         )
         # In this example grayscale_cam has only one image in the batch:
         grayscale_cam = grayscale_cam[0, :]
         rgb_image = np.asarray(T.ToPILImage()(img_to_tensor)) / 255.0
-        visualization = show_cam_on_image(rgb_image, grayscale_cam)
+        visualization = show_cam_on_image(rgb_image, grayscale_cam, use_rgb=True)
+
         return visualization
 
     def get_class_predictions(
@@ -206,7 +214,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         The images are returned in descending order of likelihood.
         """
         image = self.preprocess_image(self.image).unsqueeze(0)
-        predictions = self.model(image)[0]
+        predictions = self.model(image)[0][1:-7]
         translations = self.read_csv("translations.csv")
 
         # Create Empty Dict with all Categories in it:
@@ -214,11 +222,11 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         print("adding percentages")
         # For every prediction: add the percentage to the translated class
-        for idx in range(1, 1001):
+        for idx in range(1, 1000):
             label = labelConverter()[
-                idx
+                idx + 1
             ]
-            prediction = predictions[idx]
+            prediction = predictions[idx].item()
             translated_class = translations[label]
             translated_classes[translated_class] += prediction
 
@@ -228,6 +236,11 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
                 translated_classes.items(), key=lambda x: x[1], reverse=True
             )
         }
+        
+        # Calculate sum of all percentages (not exaclty 100)
+        sum = 0
+        for elem in ordered_predictions:
+            sum = sum + ordered_predictions[elem]
 
         final_predictions = []
         i = 0
@@ -235,7 +248,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
             if i <= n_predictions - 1:
                 class_prediction = ClassPrediction(
                     label=pred_label,  # labelConverter() needed for lucent implementation
-                    score=ordered_predictions[pred_label],
+                    score=ordered_predictions[pred_label] / sum * 100,
                     similar_images=None,
                 )
                 final_predictions.append(class_prediction)
@@ -281,7 +294,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
     Returns dummy data.
     """
 
-    def __init__(self, img: np.ndarray, delay: int = 2):
+    def __init__(self, img: np.ndarray, delay: int = 0):
         """
         Initialisation sleeps for delay seconds.
         """
@@ -308,8 +321,9 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         possible_activations = np.linspace(0.08, 4.532).tolist()
         activations = random.choices(possible_activations, k=n)
         activations.sort(reverse=True)
+        filter_ids = random.sample(range(0, nr_filters), k=n)
         for i in range(n):
-            filter_id = random.randint(0, nr_filters - 1)
+            filter_id = filter_ids[i]
             image_path = os.path.abspath(
                 os.path.expanduser(
                     os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
@@ -323,9 +337,9 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         """
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
+        Returns RGB image with values in [0, 255].
         """
-        img = self.image * 255
-        return np.clip(1 * (img - 128) + 128, 0, 255)
+        return np.clip(4 * (self.image - 128) + 128, 0, 255)
 
     def get_class_predictions(
         self, n_predictions: int, n_images: int
@@ -336,4 +350,15 @@ class DummyAnalysis(NeuralNetworkAnalysis):
 
         The images are returned in descending order of likelihood.
         """
-        pass
+        class_predictions = []
+        possible_activations = np.linspace(0.08, 4.532).tolist()
+        activations = random.choices(possible_activations, k=n_predictions)
+        activations.sort(reverse=True)
+        with open("../paprika/ml/translations.csv", encoding="utf-8", newline="") as f:
+            reader = csv.reader(f)
+            classes = list(reader)
+        for activation in activations:
+            prediction_class = random.choice(classes)
+            label = f"{prediction_class[0]}|{prediction_class[1]}"
+            class_predictions.append(ClassPrediction(label, activation, []))
+        return class_predictions
