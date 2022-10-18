@@ -101,9 +101,9 @@ def camera_image_to_pixmap(captured_image: np.ndarray) -> QPixmap:
 
 def resized_pixmap(pixmap: QPixmap, size: int) -> QPixmap:
     """
-    Returns the pixmap rescaled to size x size dimension.
+    Returns the pixmap rescaled to height size.
     """
-    return pixmap.scaled(size, size)
+    return pixmap.scaledToHeight(size)
 
 
 def image_with_explanation(
@@ -162,41 +162,55 @@ def image_and_text_grid(
     return grid_layout
 
 
-def score_and_text_grid(
+def score_text_image_grid(
     score_labels,
     german_labels,
     english_labels,
+    image_labels,
     font_size_score,
     larger_font_size_score,
     font_size_label,
     larger_font_size_label,
-) -> QGridLayout:
+) -> QVBoxLayout:
     """
-    Returns a QGridLayout with nr_prediction rows.
-    Each row contains the score for the label and its name in German and in English.
+    Returns a QVBoxLayout with nr_prediction rows.
+    Each row contains the score for the label, its name in German and in English
+    and nr_imagenet_images with the same label.
     """
-    grid_layout = QGridLayout()
-    for i in range(nr_predictions):
+    v_layout = QVBoxLayout()
+    for i_pred in range(nr_predictions):
         h_layout = QHBoxLayout()
-        h_layout.addSpacing(100)
-        h_layout.addWidget(score_labels[i], stretch=1)
-        v_layout = QVBoxLayout()
-        v_layout.addSpacing(20)
-        v_layout.addWidget(german_labels[i])
-        v_layout.addWidget(english_labels[i])
-        v_layout.addSpacing(20)
-        h_layout.addLayout(v_layout, stretch=5)
-        grid_layout.addLayout(h_layout, i, 0)
-
-        if i != 0:
-            score_labels[i].setFont(QFont(german_font, font_size_score))
-            german_labels[i].setFont(QFont(german_font, font_size_label))
-            english_labels[i].setFont(QFont(english_font, font_size_label))
+        h_layout.addSpacing(predictions_edge_spacing)
+        # add the prediction score to the row
+        h_layout.addWidget(score_labels[i_pred], stretch=1)
+        # add the German and English labels to row
+        label_v_layout = QVBoxLayout()
+        label_v_layout.addSpacing(predictions_labels_spacing)
+        label_v_layout.addWidget(german_labels[i_pred])
+        label_v_layout.addWidget(english_labels[i_pred])
+        label_v_layout.addSpacing(predictions_labels_spacing)
+        h_layout.addLayout(label_v_layout, stretch=3)
+        # add the images to the row
+        image_h_layout = QHBoxLayout()
+        for i_img in range(nr_imagenet_images):
+            image_h_layout.addWidget(image_labels[i_pred][i_img])
+            if i_img != nr_imagenet_images - 1:
+                image_h_layout.addStretch()
+        h_layout.addLayout(image_h_layout, stretch=7)
+        h_layout.addSpacing(predictions_edge_spacing)
+        # add the row to the column
+        v_layout.addLayout(h_layout)
+        v_layout.addSpacing(predictions_bottom_spacing)
+        # set fonts with larger font size for the first prediction
+        if i_pred != 0:
+            score_labels[i_pred].setFont(QFont(german_font, font_size_score))
+            german_labels[i_pred].setFont(QFont(german_font, font_size_label))
+            english_labels[i_pred].setFont(QFont(english_font, font_size_label))
         else:
-            score_labels[i].setFont(QFont(german_font, larger_font_size_score))
-            german_labels[i].setFont(QFont(german_font, larger_font_size_label))
-            english_labels[i].setFont(QFont(english_font, larger_font_size_label))
-        score_labels[i].setStyleSheet(f"color: {german_colour}")
-        german_labels[i].setStyleSheet(f"color: {german_colour}")
-        english_labels[i].setStyleSheet(f"color: {english_colour}")
-    return grid_layout
+            score_labels[i_pred].setFont(QFont(german_font, larger_font_size_score))
+            german_labels[i_pred].setFont(QFont(german_font, larger_font_size_label))
+            english_labels[i_pred].setFont(QFont(english_font, larger_font_size_label))
+        score_labels[i_pred].setStyleSheet(f"color: {german_colour}")
+        german_labels[i_pred].setStyleSheet(f"color: {german_colour}")
+        english_labels[i_pred].setStyleSheet(f"color: {english_colour}")
+    return v_layout

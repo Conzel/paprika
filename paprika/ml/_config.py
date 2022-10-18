@@ -2,6 +2,7 @@
 Contains constants for the ML analysis.
 """
 
+imagenet_relative_path = "imagenet/"
 visualisations_relative_path = "visualisations/224/"
 filter_numbers_per_layer = {
     "mixed3a": 256,

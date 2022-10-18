@@ -5,10 +5,19 @@ Contains constants for the UI.
 # image and spacing sizes
 camera_capture_size = 700
 filter_size = 218
+imagenet_small_size = 110
+imagenet_large_size = 130
 vertical_spacing_filters = 20
 horizontal_spacing_filters = 15
+predictions_labels_spacing = (
+    20  # increasing this decreases the space between the German and the English label
+)
+predictions_edge_spacing = (
+    20  # spacing on the left and right sides of one line of predictions with images
+)
+predictions_bottom_spacing = 15  # spacing under the predictions
 
-analysis_refresh_seconds = 1
+analysis_refresh_seconds = 4
 
 huge_font_size = 24
 large_font_size = 20
@@ -24,8 +33,8 @@ english_colour = "#212121"
 # screen number for each action
 screen_nr_camera_feed = 0
 screen_nr_lower_filters = None
-screen_nr_higher_filters = 1
-screen_nr_predictions = None
+screen_nr_higher_filters = None
+screen_nr_predictions = 1
 
 selected_layers = ["mixed3b", "mixed4b", "mixed4e", "mixed5b"]  # all layers to be shown
 
@@ -33,7 +42,7 @@ layers_per_screen = 2  # number of layers shown in one screen
 filter_column_length = 6  # number of filters shown in one column
 filter_row_length = 2  # number of filters shown in one row
 
-nr_predictions = 6  # the number of top predictions to show
+nr_predictions = 5  # the number of top predictions to show
 nr_imagenet_images = 3  # the number of imagenet images to show per prediction
 
 # text for screen with camera feed

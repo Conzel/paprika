@@ -214,16 +214,13 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
             .numpy()
         )
 
-
-
-        class_predictions=[]
+        class_predictions = []
         for idx in indices:
             class_prediction = ClassPrediction(
                 label=labelConverter()[
-                    idx+1
+                    idx + 1
                 ],  # labelConverter() needed for lucent implementation
-
-                score=predictions[idx].item()/sum(predictions).item()*100,
+                score=predictions[idx].item() / sum(predictions).item() * 100,
                 similar_images=None,
             )
             class_predictions.append(class_prediction)
@@ -243,6 +240,12 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         super().__init__(img)
         time.sleep(delay)
         self.image = img
+
+    def get_full_path(self, relative_path):
+        """
+        Returns the full path based on a relative path.
+        """
+        return os.path.abspath(os.path.expanduser(os.path.expandvars(relative_path)))
 
     def get_most_activated_filters(
         self, layer_string: str, n: int
@@ -266,10 +269,8 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         filter_ids = random.sample(range(0, nr_filters), k=n)
         for i in range(n):
             filter_id = filter_ids[i]
-            image_path = os.path.abspath(
-                os.path.expanduser(
-                    os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
-                )
+            image_path = self.get_full_path(
+                f"{folder_path}{layer_string}/{filter_id}.jpg"
             )
             filter_activation = activations[i]
             filters.append((image_path, filter_id, filter_activation))
@@ -283,6 +284,20 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         """
         return np.clip(4 * (self.image - 128) + 128, 0, 255)
 
+    def get_random_images_from_folder(self, path, nr_images) -> List[str]:
+        """
+        Returns a list of size nr_images containing the full paths of randomly
+        selected images in the folder specified by path.
+        """
+        files = os.listdir(path)
+        images = random.sample(files, k=nr_images)
+        image_full_paths = []
+        for image in images:
+            relative_path = path + "/" + image
+            full_path = self.get_full_path(relative_path)
+            image_full_paths.append(full_path)
+        return image_full_paths
+
     def get_class_predictions(
         self, n_predictions: int, n_images: int
     ) -> List[ClassPrediction]:
@@ -293,14 +308,20 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         The images are returned in descending order of likelihood.
         """
         class_predictions = []
+        folder_path = "../" + imagenet_relative_path
         possible_activations = np.linspace(0.08, 4.532).tolist()
         activations = random.choices(possible_activations, k=n_predictions)
         activations.sort(reverse=True)
-        with open("../paprika/ml/translations.csv", encoding="utf-8", newline="") as f:
-            reader = csv.reader(f)
-            classes = list(reader)
+        classes = open("../paprika/ml/LOC_synset_mapping.txt").read().split("\n")[:-1]
         for activation in activations:
             prediction_class = random.choice(classes)
-            label = f"{prediction_class[0]}|{prediction_class[1]}"
-            class_predictions.append(ClassPrediction(label, activation, []))
+            class_id, label_list = prediction_class.split(None, 1)
+            if "," in label_list:
+                label, label_list = label_list.split(",", 1)
+            else:
+                label = label_list
+            images = self.get_random_images_from_folder(
+                f"{folder_path}{class_id}", n_images
+            )
+            class_predictions.append(ClassPrediction(label, activation, images))
         return class_predictions

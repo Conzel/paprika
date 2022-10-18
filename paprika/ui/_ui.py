@@ -34,7 +34,9 @@ class UserInterface(QObject):
         self.running_camera_thread.started.connect(self.running_camera_worker.start)
 
         self.analysis_thread = QThread(parent=self)
-        self.analysis_worker = AnalysisWorker(self.camera, analysis_refresh_seconds, self.analysis_class)
+        self.analysis_worker = AnalysisWorker(
+            self.camera, analysis_refresh_seconds, self.analysis_class
+        )
         self.analysis_worker.moveToThread(self.analysis_thread)
         self.analysis_worker.new_analysis_signal.connect(self.on_new_analysis)
         self.analysis_thread.started.connect(self.analysis_worker.start)
@@ -62,10 +64,14 @@ class UserInterface(QObject):
         self.prediction_score_labels = []
         self.prediction_german_labels = []
         self.prediction_english_labels = []
+        self.prediction_image_labels = []
         for _ in range(nr_predictions):
             self.prediction_score_labels.append(QLabel())
             self.prediction_german_labels.append(QLabel())
             self.prediction_english_labels.append(QLabel())
+            self.prediction_image_labels.append(
+                [QLabel() for _ in range(nr_imagenet_images)]
+            )
 
         # set up the layout on the 4 screens
         self.screen_widgets = get_full_screen_widgets(self.app)
@@ -151,10 +157,11 @@ class UserInterface(QObject):
             self.saliency_german_label,
             self.saliency_english_label,
         )
-        predictions_layout = score_and_text_grid(
+        predictions_layout = score_text_image_grid(
             self.prediction_score_labels,
             self.prediction_german_labels,
             self.prediction_english_labels,
+            self.prediction_image_labels,
             large_font_size,
             huge_font_size,
             medium_font_size,
@@ -209,10 +216,19 @@ class UserInterface(QObject):
         for i in range(nr_predictions):
             prediction = class_predictions[i]
             self.prediction_score_labels[i].setText(f"{round(prediction.score, 1)}%")
-            # english_text, german_text = prediction.label.split("|")
             english_text, german_text = prediction.label, prediction.label
             self.prediction_german_labels[i].setText(german_text)
             self.prediction_english_labels[i].setText(english_text)
+            for j in range(nr_imagenet_images):
+                imagenet_image = prediction.similar_images[j]
+                pixmap = QPixmap(imagenet_image)
+                if i != 0:
+                    image_size = imagenet_small_size
+                else:
+                    image_size = imagenet_large_size
+                self.prediction_image_labels[i][j].setPixmap(
+                    resized_pixmap(pixmap, image_size)
+                )
 
     def run(self):
         self.app.exec_()
