@@ -23,7 +23,8 @@ from ._imagenet_class_list import IMAGENET_CLASS_LIST
 from lucent.modelzoo import inceptionv1
 from PIL import Image
 from abc import ABC, abstractmethod
-from typing import List, Tuple
+from typing import Dict, List, Tuple
+import csv
 
 from paprika.ml._config import *
 
@@ -176,18 +177,25 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         Returns a saliency map of the image. The saliency map has the same dimensions
         as the input image and is a heatmap of the most important pixels in the image.
         """
-        target_layers = [list(self.model.children())[136]]  # lucent implementation
+        target_layers = [
+            list(self.model.children())[136],
+            list(self.model.children())[119],
+            list(self.model.children())[128],
+        ]  # lucent implementation
 
         # Construct the CAM object once, and then re-use it on many images:
         cam = GradCAMPlusPlus(
             model=self.model, target_layers=target_layers, use_cuda=False
         )
-        # targets = [ClassifierOutputTarget(281)]
+        targets = None  # [ClassifierOutputTarget(1000)]
         # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
         img_to_tensor = T.PILToTensor()(self.image)
         input_tensor = img_to_tensor[None, :] / 255.0
         grayscale_cam = cam(
-            input_tensor=input_tensor, targets=None, eigen_smooth=False, aug_smooth=True
+            input_tensor=input_tensor,
+            targets=targets,
+            eigen_smooth=False,
+            aug_smooth=False,
         )
         # In this example grayscale_cam has only one image in the batch:
         grayscale_cam = grayscale_cam[0, :]
@@ -207,25 +215,78 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         """
         image = self.preprocess_image(self.image).unsqueeze(0)
         predictions = self.model(image)[0][1:-7]
-        indices = (
-            torch.topk(torch.tensor(list(predictions)), n_predictions)
-            .indices.cpu()
-            .detach()
-            .numpy()
-        )
+        translations = self.read_csv("translations.csv")
 
-        class_predictions = []
-        for idx in indices:
-            class_prediction = ClassPrediction(
-                label=labelConverter()[
-                    idx + 1
-                ],  # labelConverter() needed for lucent implementation
-                score=predictions[idx].item() / sum(predictions).item() * 100,
-                similar_images=None,
+        # Create Empty Dict with all Categories in it:
+        translated_classes = self.create_translation_class_dict()
+
+        print("adding percentages")
+        # For every prediction: add the percentage to the translated class
+        for idx in range(1, 1000):
+            label = labelConverter()[
+                idx + 1
+            ]
+            prediction = predictions[idx].item()
+            translated_class = translations[label]
+            translated_classes[translated_class] += prediction
+
+        ordered_predictions = {
+            k: v
+            for k, v in sorted(
+                translated_classes.items(), key=lambda x: x[1], reverse=True
             )
-            class_predictions.append(class_prediction)
+        }
+        
+        # Calculate sum of all percentages (not exaclty 100)
+        sum = 0
+        for elem in ordered_predictions:
+            sum = sum + ordered_predictions[elem]
 
-        return class_predictions
+        final_predictions = []
+        i = 0
+        for pred_label in ordered_predictions:
+            if i <= n_predictions - 1:
+                class_prediction = ClassPrediction(
+                    label=pred_label,  # labelConverter() needed for lucent implementation
+                    score=ordered_predictions[pred_label] / sum * 100,
+                    similar_images=None,
+                )
+                final_predictions.append(class_prediction)
+                i = i + 1
+            else:
+                break
+        return final_predictions
+
+    def read_csv(self, file_path) -> Dict:
+        """
+        Reads all translations from translations.csv and puts them into a dictionary
+
+        returns dictionary of translations. {'kit fox':'Fuchs', ...}
+        """
+        # Write all old labels into csv
+        input_file = csv.DictReader(open(file_path, encoding="utf-8"))
+        translateDict = {}
+        for item in input_file:
+            key = item["old_label"]
+            val = item["new_label"]
+            translateDict[key] = val
+
+        return translateDict
+
+    def create_translation_class_dict(self) -> Dict:
+        """
+        Returns a dictionary where each class and a respective percentage (initialized with 0) is saved
+        """
+        translations = self.read_csv("translations.csv")
+
+        returnDict = {}
+
+        # Item
+        for item in translations:
+            translation = translations[item]
+            returnDict[translation] = 0
+
+        return returnDict
 
 
 class DummyAnalysis(NeuralNetworkAnalysis):
