@@ -3,8 +3,8 @@ Contains constants for the UI.
 """
 
 # image and spacing sizes
-camera_capture_size = 700
-filter_size = 218
+camera_capture_size = 750
+filter_size = 380
 imagenet_small_size = 110
 imagenet_large_size = 130
 vertical_spacing_filters = 20
@@ -33,23 +33,23 @@ english_colour = "#212121"
 # screen number for each action
 screen_nr_camera_feed = 0
 screen_nr_lower_filters = None
-screen_nr_higher_filters = None
-screen_nr_predictions = 1
+screen_nr_higher_filters = 1
+screen_nr_predictions = None
 
 selected_layers = ["mixed3b", "mixed4b", "mixed4e", "mixed5b"]  # all layers to be shown
 
 layers_per_screen = 2  # number of layers shown in one screen
-filter_column_length = 6  # number of filters shown in one column
-filter_row_length = 2  # number of filters shown in one row
+filter_column_length = 4  # number of filters shown in one column
+filter_row_length = 1  # number of filters shown in one row
 
 nr_predictions = 5  # the number of top predictions to show
-nr_imagenet_images = 3  # the number of imagenet images to show per prediction
+nr_imagenet_images = 0  # the number of imagenet images to show per prediction
 
 # text for screen with camera feed
-frozen_camera_german_text = "Das Bild, das gerade analysiert wird"
-frozen_camera_english_text = "The image that is currently being analysed"
-running_camera_german_text = "Der aktuelle Kamera-Feed"
-running_camera_english_text = "The current camera feed"
+frozen_camera_german_text = "Analysiertes Bild"
+frozen_camera_english_text = "Analysed image"
+running_camera_german_text = "Kamerabild"
+running_camera_english_text = "Camera image"
 
 
 # text for screens with lower and higher filters

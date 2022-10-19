@@ -16,7 +16,7 @@ print("starting camera...")
 # camera = BufferlessVideoCapture(-1)
 camera = BufferlessVideoCapture(0)
 print("camera started")
-ui = UserInterface(camera, DummyAnalysis)
+ui = UserInterface(camera, Inceptionv1Analysis)
 ui.run()
 
 # rotate all screens back
