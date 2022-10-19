@@ -7,7 +7,7 @@ from skimage.transform import resize
 import numpy as np
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QGridLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QGridLayout, QFrame
 
 from paprika.ui._config import *
 
@@ -137,13 +137,18 @@ def image_with_explanation(
 
 
 def image_and_text_grid(
-    image_labels: List[QLabel], text_labels: List[QLabel], font_size: int
-) -> QGridLayout:
+    image_labels: List[QLabel], text_labels: List[QLabel], font_size: int, frame: QFrame):
     """
-    Returns a QGridLayout with filter_column_length columns and filter_row_length rows.
+    Creates a QGridLayout with filter_column_length columns and filter_row_length rows.
     It organises the visualisation images in this grid. Below each image it adds a text label.
+    The QGridLayout is created with frame as its parent.
     """
-    grid_layout = QGridLayout()
+    grid_layout = QGridLayout(frame)
+    grid_layout.setContentsMargins(*frame_margin_layer)
+    frame.setFrameShape(QFrame.Box)
+    frame.setStyleSheet(f"color: {german_colour}")
+    frame.setLineWidth(frame_width)
+
     i = 0
     for column in range(filter_column_length):
         for row in range(filter_row_length):

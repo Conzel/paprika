@@ -48,7 +48,9 @@ class UserInterface(QObject):
         # create labels for the filter visualisations
         self.filter_image_labels = {}
         self.filter_text_labels = {}
+        self.frames = {}
         for layer in selected_layers:
+            self.frames[layer] = QFrame()
             self.filter_image_labels[layer] = []
             self.filter_text_labels[layer] = []
             for _ in range(filter_column_length * filter_row_length):
@@ -123,12 +125,14 @@ class UserInterface(QObject):
 
         for i in range(layers_per_screen):
             layer = selected_layers[i]
-            layer_layout = image_and_text_grid(
+            frame = self.frames[layer]
+            image_and_text_grid(
                 self.filter_image_labels[layer],
                 self.filter_text_labels[layer],
                 small_font_size,
+                frame
             )
-            layout.addLayout(layer_layout, 0, i, Qt.AlignCenter)
+            layout.addWidget(frame, 0, i, Qt.AlignCenter)
 
     def init_screen_higher_filters(self):
         # add the filter visualisations to a layout
@@ -137,12 +141,14 @@ class UserInterface(QObject):
 
         for i in range(layers_per_screen):
             layer = selected_layers[i + layers_per_screen]
-            layer_layout = image_and_text_grid(
+            frame = self.frames[layer]
+            image_and_text_grid(
                 self.filter_image_labels[layer],
                 self.filter_text_labels[layer],
                 small_font_size,
+                frame
             )
-            layout.addLayout(layer_layout, 0, i, Qt.AlignCenter)
+            layout.addWidget(frame, 0, i, Qt.AlignCenter)
 
     def init_screen_predictions(self):
         # add the saliency map and predictions to a layout
