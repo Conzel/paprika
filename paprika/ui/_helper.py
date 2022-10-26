@@ -18,11 +18,15 @@ def get_full_screen_widgets(app: QGuiApplication):
     """
     screens = app.screens()
     widgets = []
-    for screen in screens:
+    used_screen_nrs = []
+    for screen_nr in [screen_nr_camera_feed, screen_nr_lower_filters, screen_nr_higher_filters, screen_nr_predictions]:
+        screen = screens[screen_nr]
         widget = QWidget()
         screen_geometry = screen.geometry()
         widget.move(screen_geometry.left(), screen_geometry.top())
         widget.showFullScreen()
+        widget.setWindowTitle(f"{screen_nr}.{used_screen_nrs.count(screen_nr)}")
+        used_screen_nrs.append(screen_nr)
         widgets.append(widget)
     return widgets
 

@@ -33,10 +33,11 @@ german_colour = "#4b4b4b"
 english_colour = "#212121"
 
 # screen number for each action
-screen_nr_camera_feed = 0
+# set each of them to 0, 1, 2 or 3 (multiple can have the same value)
+screen_nr_camera_feed = 1
 screen_nr_lower_filters = 1
-screen_nr_higher_filters = None
-screen_nr_predictions = None
+screen_nr_higher_filters = 1
+screen_nr_predictions = 1
 
 selected_layers = ["mixed3b", "mixed4b", "mixed4e", "mixed5b"]  # all layers to be shown
 

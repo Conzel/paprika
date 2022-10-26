@@ -97,7 +97,7 @@ class UserInterface(QObject):
 
     def init_screen_camera_feed(self):
         # add the two camera feeds to a layout
-        screen_widget = self.screen_widgets[screen_nr_camera_feed]
+        screen_widget = self.screen_widgets[0]
         layout = QGridLayout(screen_widget)
         frozen_camera_layout = image_with_explanation(
             self.frozen_camera_label,
@@ -120,7 +120,7 @@ class UserInterface(QObject):
 
     def init_screen_lower_filters(self):
         # add the filter visualisations to a layout
-        screen_widget = self.screen_widgets[screen_nr_lower_filters]
+        screen_widget = self.screen_widgets[1]
         layout = QGridLayout(screen_widget)
 
         for i in range(layers_per_screen):
@@ -136,7 +136,7 @@ class UserInterface(QObject):
 
     def init_screen_higher_filters(self):
         # add the filter visualisations to a layout
-        screen_widget = self.screen_widgets[screen_nr_higher_filters]
+        screen_widget = self.screen_widgets[2]
         layout = QGridLayout(screen_widget)
 
         for i in range(layers_per_screen):
@@ -152,7 +152,7 @@ class UserInterface(QObject):
 
     def init_screen_predictions(self):
         # add the saliency map and predictions to a layout
-        screen_widget = self.screen_widgets[screen_nr_predictions]
+        screen_widget = self.screen_widgets[3]
         layout = QGridLayout(screen_widget)
 
         saliency_layout = image_with_explanation(

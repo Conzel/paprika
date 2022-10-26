@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 # necessary to work with Qt5: https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
-os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
+#os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
 
 
 class Camera(ABC):
