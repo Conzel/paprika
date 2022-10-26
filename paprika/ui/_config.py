@@ -59,8 +59,8 @@ running_camera_english_text = "Camera image"
 
 # text for screen with predictions
 def saliency_map_german_text(prediction: str):
-    return f"Wie hat die KI das als {prediction} klassifiziert?"
+    return f"Wichtige Teile des Bildes für die Klassifizierung"
 
 
 def saliency_map_english_text(prediction: str):
-    return f"How did the AI classify this as {prediction}?"
+    return f"Important parts of the image for classification"
