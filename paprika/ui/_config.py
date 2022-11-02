@@ -4,11 +4,16 @@ Contains constants for the UI.
 
 # image and spacing sizes
 camera_capture_size = 750
-filter_size = 380
+filter_size = 370
 imagenet_small_size = 110
 imagenet_large_size = 130
-vertical_spacing_filters = 20
-frame_margin_layer = (30, 30, 30, 30)  # left, top, right, bottom margins between layer content and frame
+vertical_spacing_filters = 30
+frame_margin_layer = (
+    20,
+    20,
+    20,
+    20,
+)  # left, top, right, bottom margins between layer content and frame
 frame_width = 4
 horizontal_spacing_filters = 15
 predictions_labels_spacing = (
@@ -18,6 +23,11 @@ predictions_edge_spacing = (
     20  # spacing on the left and right sides of one line of predictions with images
 )
 predictions_bottom_spacing = 15  # spacing under the predictions
+nr_arrows = 9
+arrow_spacing = 119
+visible_arrows_from_camera = [2]
+visible_arrows_to_predictions = [5]
+visible_arrows_between_filters = range(nr_arrows)
 
 analysis_refresh_seconds = 2
 
@@ -31,6 +41,7 @@ english_font = "Yu Gothic UI Semilight"
 
 german_colour = "#4b4b4b"
 english_colour = "#212121"
+background_colour = "#f0f0f0"
 
 # screen number for each action
 # set each of them to 0, 1, 2 or 3 (multiple can have the same value)

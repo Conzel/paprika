@@ -7,7 +7,14 @@ from skimage.transform import resize
 import numpy as np
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QGridLayout, QFrame
+from PyQt5.QtWidgets import (
+    QWidget,
+    QLabel,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGridLayout,
+    QFrame,
+)
 
 from paprika.ui._config import *
 
@@ -19,13 +26,19 @@ def get_full_screen_widgets(app: QGuiApplication):
     screens = app.screens()
     widgets = []
     used_screen_nrs = []
-    for screen_nr in [screen_nr_camera_feed, screen_nr_lower_filters, screen_nr_higher_filters, screen_nr_predictions]:
+    for screen_nr in [
+        screen_nr_camera_feed,
+        screen_nr_lower_filters,
+        screen_nr_higher_filters,
+        screen_nr_predictions,
+    ]:
         screen = screens[screen_nr]
         widget = QWidget()
         screen_geometry = screen.geometry()
         widget.move(screen_geometry.left(), screen_geometry.top())
         widget.showFullScreen()
         widget.setWindowTitle(f"{screen_nr}.{used_screen_nrs.count(screen_nr)}")
+        widget.setStyleSheet(f"background-color: {background_colour}")
         used_screen_nrs.append(screen_nr)
         widgets.append(widget)
     return widgets
@@ -140,8 +153,37 @@ def image_with_explanation(
     return layout
 
 
+def arrow_column_layout(visible_arrows):
+    """
+    Returns QVBoxLayout with nr_arrows of arrows, where only the arrows at the indices given by the list
+    visible_arrows are coloured gray and all the other ones have the background colour (thus are not visible).
+    """
+    layout = QVBoxLayout()
+    for i in range(nr_arrows):
+        # arrow_label = QLabel("➞")
+        arrow_label = QLabel("➔")
+        arrow_label.setFont(QFont(german_font, huge_font_size))
+        if i in visible_arrows:
+            arrow_label.setStyleSheet(f"color: {german_colour}")
+        else:
+            arrow_label.setStyleSheet(f"color: {background_colour}")
+        arrow_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(arrow_label)
+        if i != nr_arrows - 1:
+            layout.addSpacing(arrow_spacing)
+    return layout
+
+
+def three_dots_label():
+    label = QLabel("• • •")
+    label.setFont(QFont(german_font, huge_font_size))
+    label.setStyleSheet(f"color: {german_colour}")
+    return label
+
+
 def image_and_text_grid(
-    image_labels: List[QLabel], text_labels: List[QLabel], font_size: int, frame: QFrame):
+    image_labels: List[QLabel], text_labels: List[QLabel], font_size: int, frame: QFrame
+):
     """
     Creates a QGridLayout with filter_column_length columns and filter_row_length rows.
     It organises the visualisation images in this grid. Below each image it adds a text label.
@@ -167,6 +209,12 @@ def image_and_text_grid(
             v_layout.addSpacing(vertical_spacing_filters)
             i += 1
             grid_layout.addLayout(v_layout, column, row)
+    grid_layout.addWidget(
+        three_dots_label(),
+        grid_layout.rowCount(),
+        grid_layout.columnCount() - 1,
+        Qt.AlignCenter,
+    )
     grid_layout.setHorizontalSpacing(horizontal_spacing_filters)
     return grid_layout
 

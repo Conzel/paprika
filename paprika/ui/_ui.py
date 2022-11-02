@@ -130,9 +130,25 @@ class UserInterface(QObject):
                 self.filter_image_labels[layer],
                 self.filter_text_labels[layer],
                 small_font_size,
-                frame
+                frame,
             )
-            layout.addWidget(frame, 0, i, Qt.AlignCenter)
+            if i == 0:
+                visible_arrows = visible_arrows_from_camera
+            else:
+                visible_arrows = visible_arrows_between_filters
+            layout.addLayout(
+                arrow_column_layout(visible_arrows),
+                0,
+                layout.columnCount(),
+                Qt.AlignCenter,
+            )
+            layout.addWidget(frame, 0, layout.columnCount(), Qt.AlignCenter)
+        layout.addLayout(
+            arrow_column_layout(visible_arrows_between_filters),
+            0,
+            layout.columnCount(),
+            Qt.AlignCenter,
+        )
 
     def init_screen_higher_filters(self):
         # add the filter visualisations to a layout
@@ -146,9 +162,21 @@ class UserInterface(QObject):
                 self.filter_image_labels[layer],
                 self.filter_text_labels[layer],
                 small_font_size,
-                frame
+                frame,
             )
-            layout.addWidget(frame, 0, i, Qt.AlignCenter)
+            layout.addLayout(
+                arrow_column_layout(visible_arrows_between_filters),
+                0,
+                layout.columnCount(),
+                Qt.AlignCenter,
+            )
+            layout.addWidget(frame, 0, layout.columnCount(), Qt.AlignCenter)
+        layout.addLayout(
+            arrow_column_layout(visible_arrows_to_predictions),
+            0,
+            layout.columnCount(),
+            Qt.AlignCenter,
+        )
 
     def init_screen_predictions(self):
         # add the saliency map and predictions to a layout
