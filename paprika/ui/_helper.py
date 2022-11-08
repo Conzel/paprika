@@ -137,6 +137,7 @@ def image_with_explanation(
     """
     layout = QVBoxLayout()
     layout.addWidget(image_label)
+    image_label.setAlignment(Qt.AlignCenter)
 
     german_text_label.setText(german_text)
     german_text_label.setFont(QFont(german_font, font_size))
@@ -162,7 +163,7 @@ def arrow_column_layout(visible_arrows):
     for i in range(nr_arrows):
         # arrow_label = QLabel("➞")
         arrow_label = QLabel("➔")
-        arrow_label.setFont(QFont(german_font, huge_font_size))
+        arrow_label.setFont(QFont(german_font, large_font_size))
         if i in visible_arrows:
             arrow_label.setStyleSheet(f"color: {german_colour}")
         else:
@@ -176,7 +177,7 @@ def arrow_column_layout(visible_arrows):
 
 def three_dots_label():
     label = QLabel("• • •")
-    label.setFont(QFont(german_font, huge_font_size))
+    label.setFont(QFont(german_font, large_font_size))
     label.setStyleSheet(f"color: {german_colour}")
     return label
 
@@ -239,25 +240,26 @@ def score_text_image_grid(
         h_layout = QHBoxLayout()
         h_layout.addSpacing(predictions_edge_spacing)
         # add the prediction score to the row
-        h_layout.addWidget(score_labels[i_pred], stretch=1)
+        h_layout.addWidget(score_labels[i_pred], stretch=predictions_stretch[0])
         # add the German and English labels to row
         label_v_layout = QVBoxLayout()
         label_v_layout.addSpacing(predictions_labels_spacing)
         label_v_layout.addWidget(german_labels[i_pred])
         label_v_layout.addWidget(english_labels[i_pred])
         label_v_layout.addSpacing(predictions_labels_spacing)
-        h_layout.addLayout(label_v_layout, stretch=3)
+        h_layout.addLayout(label_v_layout, stretch=predictions_stretch[1])
         # add the images to the row
         image_h_layout = QHBoxLayout()
         for i_img in range(nr_imagenet_images):
             image_h_layout.addWidget(image_labels[i_pred][i_img])
             if i_img != nr_imagenet_images - 1:
                 image_h_layout.addStretch()
-        h_layout.addLayout(image_h_layout, stretch=7)
+        h_layout.addLayout(image_h_layout, stretch=predictions_stretch[2])
         h_layout.addSpacing(predictions_edge_spacing)
         # add the row to the column
         v_layout.addLayout(h_layout)
-        v_layout.addSpacing(predictions_bottom_spacing)
+        if i_pred != nr_predictions - 1:
+            v_layout.addSpacing(predictions_bottom_spacing)
         # set fonts with larger font size for the first prediction
         if i_pred != 0:
             score_labels[i_pred].setFont(QFont(german_font, font_size_score))

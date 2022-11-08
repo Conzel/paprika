@@ -236,7 +236,7 @@ class UserInterface(QObject):
                     resized_pixmap(pixmap, filter_size)
                 )
                 self.filter_text_labels[layer][i].setText(
-                    f"Filter {filter_id}  -  {round(filter_activation, 1)}%"
+                    f"Filter {filter_id}  –  {round(filter_activation, 1)}%"
                 )
 
         # update the saliency map
@@ -251,6 +251,7 @@ class UserInterface(QObject):
             prediction = class_predictions[i]
             self.prediction_score_labels[i].setText(f"{round(prediction.score, 1)}%")
             english_text, german_text = prediction.label, prediction.label
+            # german_text, english_text = prediction.label.split("|")
             self.prediction_german_labels[i].setText(german_text)
             self.prediction_english_labels[i].setText(english_text)
             for j in range(nr_imagenet_images):

@@ -385,4 +385,11 @@ class DummyAnalysis(NeuralNetworkAnalysis):
                 f"{folder_path}{class_id}", n_images
             )
             class_predictions.append(ClassPrediction(label, activation, images))
+        # activations = [87.4, 3.1, 1.7, 1.6, 0.9]
+        # predictions = [("Brezel", "Pretzel", "n07695742"), ("Schnalle", "Buckle", "n02910353"), ("Haken", "Hook", "n03532672"), ("Wurm", "Worm", "n01924916"), ("Lupe", "Loupe", "n03692522")]
+        # for i in range(5):
+        #     activation = activations[i]
+        #     german_label, english_label, class_id = predictions[i]
+        #     images = self.get_random_images_from_folder(f"{folder_path}{class_id}", n_images)
+        #     class_predictions.append(ClassPrediction(f"{german_label}|{english_label}", activation, images))
         return class_predictions

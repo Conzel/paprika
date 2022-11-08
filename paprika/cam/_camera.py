@@ -1,3 +1,4 @@
+import random
 from typing import Union
 import cv2
 import os
@@ -8,6 +9,7 @@ import numpy as np
 
 # necessary to work with Qt5: https://stackoverflow.com/questions/63829991/qt-qpa-plugin-could-not-load-the-qt-platform-plugin-xcb-in-even-though-it
 #os.environ.pop("QT_QPA_PLATFORM_PLUGIN_PATH")
+from PIL import Image
 
 
 class Camera(ABC):
@@ -71,11 +73,16 @@ class BufferlessVideoCapture(Camera):
 
 class DummyCamera(Camera):
     """
-    A dummy that always returns a new random 1080 x 1920 x 3 image.
+    A dummy that returns a random image from the _dummy_camera folder.
     """
 
     def __init__(self, name: Union[str, int]):
         super().__init__()
 
     def read(self) -> np.ndarray:
-        return np.random.random((1080, 1920, 3)) * 255
+        source_folder = "../paprika/cam/_dummy_camera"
+        images = os.listdir(source_folder)
+        image_name = random.choice(images)
+        image = cv2.imread(f"{source_folder}/{image_name}")
+        return image
+        # return np.random.random((1080, 1920, 3)) * 255
