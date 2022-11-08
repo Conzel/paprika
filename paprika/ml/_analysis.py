@@ -1,6 +1,7 @@
 import csv
 import os
 import random
+import json
 import time
 import numpy as np
 import torch
@@ -204,6 +205,25 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         return visualization
 
+    def get_similar_images(self, path, class_id, nr_images, feature_vector) -> List[str]:
+        """
+        Returns a list of size nr_images containing the full paths of most similar images
+        """
+
+        #class_id='n01440764' #for testing purposes
+        image_full_paths = []
+        if nr_images !=0:
+            tensor = torch.load(f"{path}{class_id}/{class_id}_activation_tensor.pt").float()
+            dictionary =json.load( open( f"{path}{class_id}/{class_id}_dictionary.json" ) )
+            dot_product = feature_vector[np.newaxis] @ tensor
+            indices = torch.topk(dot_product, nr_images).indices.cpu().detach().numpy()
+            image_full_paths = []
+            for idx in indices[0]:
+                image = dictionary[str(idx)]
+                full_path = path + str(class_id) + "/" + image
+                image_full_paths.append(full_path)
+        return image_full_paths
+
     def get_class_predictions(
         self, n_predictions: int, n_images: int
     ) -> List[ClassPrediction]:
@@ -213,21 +233,38 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         The images are returned in descending order of likelihood.
         """
+        #calculate predictions and activation in feature space
         image = self.preprocess_image(self.image).unsqueeze(0)
+        layer_string = "mixed5b"
+        layer_number = filter_strings_to_numbers[layer_string]
+        layer = list(self.model.children())[layer_number]
+        activations = SaveFeatures(layer)
         predictions = self.model(image)[0][1:-7]
+        mean_act = [
+            activations.features[0, i].mean()
+            for i in range(activations.features.shape[1])
+        ]
+        sum = torch.sum(torch.tensor(mean_act))
+        mean_act= torch.tensor(mean_act) / sum
+
+
         translations = self.read_csv("translations.csv")
+        folder_path = "../" + imagenet_relative_path
 
         # Create Empty Dict with all Categories in it:
         translated_classes = self.create_translation_class_dict()
+        label_to_class_id ={}
 
-        print("adding percentages")
+        #print("adding percentages")
         # For every prediction: add the percentage to the translated class
         for idx in range(1, 1000):
-            label = labelConverter()[
+            label, class_number = labelConverter()[
                 idx + 1
             ]
+
             prediction = predictions[idx].item()
             translated_class = translations[label]
+            label_to_class_id[translated_class]=class_number
             translated_classes[translated_class] += prediction
 
         ordered_predictions = {
@@ -244,17 +281,22 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         final_predictions = []
         i = 0
+
         for pred_label in ordered_predictions:
             if i <= n_predictions - 1:
                 class_prediction = ClassPrediction(
-                    label=pred_label,  # labelConverter() needed for lucent implementation
+                    label=pred_label,
                     score=ordered_predictions[pred_label] / sum * 100,
-                    similar_images=None,
+                    similar_images=self.get_similar_images(
+                folder_path, label_to_class_id[pred_label], n_images,mean_act
+            ),
                 )
                 final_predictions.append(class_prediction)
                 i = i + 1
             else:
                 break
+
+
         return final_predictions
 
     def read_csv(self, file_path) -> Dict:
