@@ -211,15 +211,17 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         """
 
         #class_id='n01440764' #for testing purposes
-        tensor = torch.load(f"{path}{class_id}/{class_id}_activation_tensor.pt").float()
-        dictionary =json.load( open( f"{path}{class_id}/{class_id}_dictionary.json" ) )
-        dot_product = feature_vector[np.newaxis] @ tensor
-        indices = torch.topk(dot_product, nr_images).indices.cpu().detach().numpy()
         image_full_paths = []
-        for idx in indices[0]:
-            image = dictionary[str(idx)]
-            full_path = path + str(class_id) + "/" + image
-            image_full_paths.append(full_path)
+        if nr_images !=0:
+            tensor = torch.load(f"{path}{class_id}/{class_id}_activation_tensor.pt").float()
+            dictionary =json.load( open( f"{path}{class_id}/{class_id}_dictionary.json" ) )
+            dot_product = feature_vector[np.newaxis] @ tensor
+            indices = torch.topk(dot_product, nr_images).indices.cpu().detach().numpy()
+            image_full_paths = []
+            for idx in indices[0]:
+                image = dictionary[str(idx)]
+                full_path = path + str(class_id) + "/" + image
+                image_full_paths.append(full_path)
         return image_full_paths
 
     def get_class_predictions(
