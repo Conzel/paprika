@@ -5,7 +5,7 @@ from typing import List
 from PIL import Image
 from skimage.transform import resize
 import numpy as np
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup
 from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont
 from PyQt5.QtWidgets import (
     QWidget,
@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QGridLayout,
-    QFrame,
+    QFrame, QGraphicsOpacityEffect,
 )
 
 from paprika.ui._config import *
@@ -154,15 +154,18 @@ def image_with_explanation(
     return layout
 
 
-def arrow_column_layout(visible_arrows):
+def arrow_column_layout(visible_arrows) -> (QVBoxLayout, List[QLabel]):
     """
     Returns QVBoxLayout with nr_arrows of arrows, where only the arrows at the indices given by the list
     visible_arrows are coloured gray and all the other ones have the background colour (thus are not visible).
+    Also returns the list of arrows as QLabel list.
     """
     layout = QVBoxLayout()
+    arrows = []
     for i in range(nr_arrows):
         # arrow_label = QLabel("➞")
         arrow_label = QLabel("➔")
+        arrows.append(arrow_label)
         arrow_label.setFont(QFont(german_font, large_font_size))
         if i in visible_arrows:
             arrow_label.setStyleSheet(f"color: {german_colour}")
@@ -172,7 +175,7 @@ def arrow_column_layout(visible_arrows):
         layout.addWidget(arrow_label)
         if i != nr_arrows - 1:
             layout.addSpacing(arrow_spacing)
-    return layout
+    return layout, arrows
 
 
 def three_dots_label():
@@ -273,3 +276,38 @@ def score_text_image_grid(
         german_labels[i_pred].setStyleSheet(f"color: {german_colour}")
         english_labels[i_pred].setStyleSheet(f"color: {english_colour}")
     return v_layout
+
+
+def add_opacity_animations(labels: List[QLabel], animation: QSequentialAnimationGroup):
+    """
+    Adds animations to animation such that all labels fade in, stay opaque and fade out
+    at the same time.
+    animation_milliseconds gives the length of the three phases
+    """
+    fade_in_animation_group = QParallelAnimationGroup()
+    fade_out_animation_group = QParallelAnimationGroup()
+    opaque_animation_group = QParallelAnimationGroup()
+    for label in labels:
+        effect = QGraphicsOpacityEffect()
+        label.setGraphicsEffect(effect)
+        # arrows fade in
+        fade_in_animation = QPropertyAnimation(effect, b"opacity")
+        fade_in_animation.setDuration(animation_milliseconds[0])
+        fade_in_animation.setStartValue(0)
+        fade_in_animation.setEndValue(1)
+        fade_in_animation_group.addAnimation(fade_in_animation)
+        # arrows stay opaque
+        opaque_animation = QPropertyAnimation(effect, b"opacity")
+        opaque_animation.setDuration(animation_milliseconds[1])
+        opaque_animation.setStartValue(1)
+        opaque_animation.setEndValue(1)
+        opaque_animation_group.addAnimation(opaque_animation)
+        # arrows fade out
+        fade_out_animation = QPropertyAnimation(effect, b"opacity")
+        fade_out_animation.setDuration(animation_milliseconds[2])
+        fade_out_animation.setStartValue(1)
+        fade_out_animation.setEndValue(0)
+        fade_out_animation_group.addAnimation(fade_out_animation)
+    animation.addAnimation(fade_in_animation_group)
+    animation.addAnimation(opaque_animation_group)
+    animation.addAnimation(fade_out_animation_group)

@@ -1,9 +1,9 @@
 import random
 import sys
 
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QApplication, QGridLayout, QShortcut
+from PyQt5.QtWidgets import QApplication, QGridLayout, QShortcut, QGraphicsOpacityEffect
 
 from paprika.cam import Camera
 from paprika.ml import DummyAnalysis, Inceptionv1Analysis
@@ -56,6 +56,7 @@ class UserInterface(QObject):
             for _ in range(filter_column_length * filter_row_length):
                 self.filter_image_labels[layer].append(QLabel())
                 self.filter_text_labels[layer].append(QLabel())
+        self.arrow_labels = []
 
         # create labels for the saliency map
         self.saliency_image_label = QLabel()
@@ -85,6 +86,10 @@ class UserInterface(QObject):
             self.init_screen_higher_filters()
         if screen_nr_predictions is not None:
             self.init_screen_predictions()
+
+        # set up animations on the arrows
+        self.arrows_animation = QSequentialAnimationGroup()
+        add_opacity_animations(self.arrow_labels, self.arrows_animation)
 
         # add Ctrl+Q shortcut for quitting the app
         for screen_widget in self.screen_widgets:
@@ -136,15 +141,19 @@ class UserInterface(QObject):
                 visible_arrows = visible_arrows_from_camera
             else:
                 visible_arrows = visible_arrows_between_filters
+            arrow_layout, arrow_labels = arrow_column_layout(visible_arrows)
+            self.arrow_labels.extend(arrow_labels)
             layout.addLayout(
-                arrow_column_layout(visible_arrows),
+                arrow_layout,
                 0,
                 layout.columnCount(),
                 Qt.AlignCenter,
             )
             layout.addWidget(frame, 0, layout.columnCount(), Qt.AlignCenter)
+        arrow_layout, arrow_labels = arrow_column_layout(visible_arrows_between_filters)
+        self.arrow_labels.extend(arrow_labels)
         layout.addLayout(
-            arrow_column_layout(visible_arrows_between_filters),
+            arrow_layout,
             0,
             layout.columnCount(),
             Qt.AlignCenter,
@@ -164,15 +173,19 @@ class UserInterface(QObject):
                 small_font_size,
                 frame,
             )
+            arrow_layout, arrow_labels = arrow_column_layout(visible_arrows_between_filters)
+            self.arrow_labels.extend(arrow_labels)
             layout.addLayout(
-                arrow_column_layout(visible_arrows_between_filters),
+                arrow_layout,
                 0,
                 layout.columnCount(),
                 Qt.AlignCenter,
             )
             layout.addWidget(frame, 0, layout.columnCount(), Qt.AlignCenter)
+        arrow_layout, arrow_labels = arrow_column_layout(visible_arrows_to_predictions)
+        self.arrow_labels.extend(arrow_labels)
         layout.addLayout(
-            arrow_column_layout(visible_arrows_to_predictions),
+            arrow_layout,
             0,
             layout.columnCount(),
             Qt.AlignCenter,
@@ -264,6 +277,8 @@ class UserInterface(QObject):
                 self.prediction_image_labels[i][j].setPixmap(
                     resized_pixmap(pixmap, image_size)
                 )
+
+        self.arrows_animation.start()
 
     def run(self):
         self.app.exec_()

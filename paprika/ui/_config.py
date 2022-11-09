@@ -24,11 +24,14 @@ predictions_edge_spacing = (
 )
 predictions_bottom_spacing = 50  # spacing under the predictions
 predictions_stretch = (2, 3, 10)  # ratio of amounts of space for score, label and images
+
+# arrow configs
 nr_arrows = 8
 arrow_spacing = 160
 visible_arrows_from_camera = [2]
 visible_arrows_to_predictions = [4]
 visible_arrows_between_filters = range(nr_arrows)
+animation_milliseconds = (1000, 500, 1000)  # fade in, opaque, fade out
 
 analysis_refresh_seconds = 4
 
