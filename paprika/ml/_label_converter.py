@@ -15,14 +15,14 @@ def labelConverter():
         temp = line[10:]
         # Split String at every spacecharacter to extract the numbers at the beginning
         temp = temp.split(" ")
-        lines[idx] = temp
+        lines[idx] = (temp, class_number)
 
     # Insert into dictionary
     for line in lines:
-        num = int(line[0])
+        num = int(line[0][0])
         # due to splitting at space -> red hat will be ['red', 'hat'] which will need to be put together
-        label = " ".join(line[1:])
-        labelDict[num] = (label,class_number)
+        label = " ".join(line[0][1:])
+        labelDict[num] = (label,line[1])
 
     # For checking if every index is in the dict
     lastIndex = 0
