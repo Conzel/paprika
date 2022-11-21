@@ -50,8 +50,8 @@ background_colour = "#f0f0f0"
 # screen number for each action
 # set each of them to 0, 1, 2 or 3 (multiple can have the same value)
 screen_nr_camera_feed = 1
-screen_nr_lower_filters = 1
-screen_nr_higher_filters = 1
+screen_nr_lower_filters = 0
+screen_nr_higher_filters = 0
 screen_nr_predictions = 1
 
 selected_layers = ["mixed3b", "mixed4c", "mixed4e", "mixed5a"]  # all layers to be shown
@@ -61,7 +61,7 @@ filter_column_length = 4  # number of filters shown in one column
 filter_row_length = 1  # number of filters shown in one row
 
 nr_predictions = 5  # the number of top predictions to show
-nr_imagenet_images = 0  # the number of imagenet images to show per prediction
+nr_imagenet_images = 3  # the number of imagenet images to show per prediction
 
 # text for screen with camera feed
 frozen_camera_german_text = "Analysiertes Bild"

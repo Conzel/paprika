@@ -212,16 +212,30 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         #class_id='n01440764' #for testing purposes
         image_full_paths = []
+        enough_images_in_class =True
+
         if nr_images !=0:
             tensor = torch.load(f"{path}{class_id}/{class_id}_activation_tensor.pt").float()
             dictionary =json.load( open( f"{path}{class_id}/{class_id}_dictionary.json" ) )
+
+            if len(dictionary)<nr_images:
+                print(f'class {class_id} does not contain enough images') #shouldn't happen, when whole image net is used
+                enough_images_in_class = False
             dot_product = feature_vector[np.newaxis] @ tensor
             indices = torch.topk(dot_product, nr_images).indices.cpu().detach().numpy()
+
             image_full_paths = []
+
             for idx in indices[0]:
-                image = dictionary[str(idx)]
+
+                #if not enough images in class (shouldn't be the case), the first (and only?) image is shown multiple times to avoid crash of ui
+                if enough_images_in_class:
+                    image = dictionary[str(idx)]
+                else:
+                    image = dictionary[str(indices[0][0])]
                 full_path = path + str(class_id) + "/" + image
                 image_full_paths.append(full_path)
+
         return image_full_paths
 
     def get_class_predictions(
@@ -266,6 +280,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
             translated_class = translations[label]
             label_to_class_id[translated_class]=class_number
             translated_classes[translated_class] += prediction
+
 
         ordered_predictions = {
             k: v
