@@ -78,7 +78,9 @@ if __name__ == "__main__":
             ratio = width / height
 
             # select images that are not too wide or too tall
-            if not(0.85 <= ratio <= 1.35) or min_side<224:
+            '''if not(0.85 <= ratio <= 1.35) or min_side<224: ''' #checking for ratio excludes lots of images!
+
+            if min_side<224: #necessary condition (otherwise error is thrown)
                 #os.remove(image_path)
                 #print('deleted')
                 #print(img.shape)
