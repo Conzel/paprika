@@ -9,7 +9,7 @@ n02509815|7|Panda|Panda|lesser panda, red panda, panda, bear cat, cat bear, Ailu
 n02124075|8|Katze|Cat|Egyptian cat
 n02417914|9|Steinbock|Ibex|ibex, Capra ibex
 n02123394|10|Katze|Cat|Persian cat
-n02125311|11|Wildkatze|Wild cat|cougar, puma, catamount, mountain lion, painter, panther, Felis concolor
+n02125311|11|Raubkatze|Big cat|cougar, puma, catamount, mountain lion, painter, panther, Felis concolor
 n02423022|12|Gazelle|Gazelle|gazelle
 n02346627|13|Stachelschwein|Porcupine|porcupine, hedgehog
 n02077923|14|Seelöwe|Sea lion|sea lion
@@ -28,7 +28,7 @@ n02098105|26|Hund|Dog|soft-coated wheaten terrier
 n02096437|27|Hund|Dog|Dandie Dinmont, Dandie Dinmont terrier
 n02114712|28|Wolf|Wolf|red wolf, maned wolf, Canis rufus, Canis niger
 n02105641|29|Hund|Dog|Old English sheepdog, bobtail
-n02128925|30|Wildkatze|Wild cat|jaguar, panther, Panthera onca, Felis onca
+n02128925|30|Raubkatze|Big cat|jaguar, panther, Panthera onca, Felis onca
 n02091635|31|Hund|Dog|otterhound, otter hound
 n02088466|32|Hund|Dog|bloodhound, sleuthhound
 n02096051|33|Hund|Dog|Airedale, Airedale terrier
@@ -53,7 +53,7 @@ n02105162|51|Hund|Dog|malinois
 n02415577|52|Schaf|Sheep|bighorn, bighorn sheep, cimarron, Rocky Mountain bighorn, Rocky Mountain sheep, Ovis canadensis
 n02356798|53|Eichhörnchen|Squirrel|fox squirrel, eastern fox squirrel, Sciurus niger
 n02488702|54|Affe|Monkey|colobus, colobus monkey
-n02123159|55|Wildkatze|Wild cat|tiger cat
+n02123159|55|Raubkatze|Big cat|tiger cat
 n02098413|56|Hund|Dog|Lhasa, Lhasa apso
 n02422699|57|Antilope|Antelope|impala, Aepyceros melampus
 n02114855|58|Wolf|Wolf|coyote, prairie wolf, brush wolf, Canis latrans
@@ -74,16 +74,16 @@ n02095889|72|Hund|Dog|Sealyham terrier, Sealyham
 n02484975|73|Affe|Monkey|guenon, guenon monkey
 n02137549|74|Manguste|Mongoose|mongoose
 n02500267|75|Lemur|Lemur|indri, indris, Indri indri, Indri brevicaudatus
-n02129604|76|Wildkatze|Wild cat|tiger, Panthera tigris
+n02129604|76|Raubkatze|Big cat|tiger, Panthera tigris
 n02090721|77|Hund|Dog|Irish wolfhound
 n02396427|78|Wildschwein|Wild boar|wild boar, boar, Sus scrofa
 n02108000|79|Hund|Dog|EntleBucher
 n02391049|80|Zebra|Zebra|zebra
 n02412080|81|Schaf|Sheep|ram, tup
 n02108915|82|Hund|Dog|French bulldog
-n02480495|83|Orang-Utan|Orangutan|orangutan, orang, orangutang, Pongo pygmaeus
+n02480495|83|Affe|Monkey|orangutan, orang, orangutang, Pongo pygmaeus
 n02110806|84|Hund|Dog|basenji
-n02128385|85|Wildkatze|Wild cat|leopard, Panthera pardus
+n02128385|85|Raubkatze|Big cat|leopard, Panthera pardus
 n02107683|86|Hund|Dog|Bernese mountain dog
 n02085936|87|Hund|Dog|Maltese dog, Maltese terrier, Maltese
 n02094114|88|Hund|Dog|Norfolk terrier
@@ -119,7 +119,7 @@ n02102973|117|Hund|Dog|Irish water spaniel
 n02112018|118|Hund|Dog|Pomeranian
 n02093647|119|Hund|Dog|Bedlington terrier
 n02397096|120|Schwein|Pig|warthog
-n02437312|121|Dromedar|Camel|Arabian camel, dromedary, Camelus dromedarius
+n02437312|121|Dromedar|Dromedary|Arabian camel, dromedary, Camelus dromedarius
 n02483708|122|Affe|Monkey|siamang, Hylobates syndactylus, Symphalangus syndactylus
 n02097047|123|Hund|Dog|miniature schnauzer
 n02106030|124|Hund|Dog|collie
@@ -151,7 +151,7 @@ n02109961|149|Hund|Dog|Eskimo dog, husky
 n02101388|150|Hund|Dog|Brittany spaniel
 n02113799|151|Hund|Dog|standard poodle
 n02095570|152|Hund|Dog|Lakeland terrier
-n02128757|153|Wildkatze|Wild cat|snow leopard, ounce, Panthera uncia
+n02128757|153|Raubkatze|Big cat|snow leopard, ounce, Panthera uncia
 n02101006|154|Hund|Dog|Gordon setter
 n02115641|155|Dingo|Dingo|dingo, warrigal, warragal, Canis dingo
 n02097209|156|Hund|Dog|standard schnauzer
@@ -184,27 +184,27 @@ n02443114|182|Marder|Weasel|polecat, fitch, foulmart, foumart, Mustela putorius
 n02361337|183|Murmeltier|Marmot|marmot
 n02105412|184|Hund|Dog|kelpie
 n02483362|185|Affe|Monkey|gibbon, Hylobates lar
-n02437616|186|Lama|Llama|llama
+n02437616|186|Lama|Lama|llama
 n02107312|187|Hund|Dog|miniature pinscher
 n02325366|188|Hase|Rabbit|wood rabbit, cottontail, cottontail rabbit
 n02091032|189|Hund|Dog|Italian greyhound
-n02129165|190|Wildkatze|Wild cat|lion, king of beasts, Panthera leo
+n02129165|190|Raubkatze|Big cat|lion, king of beasts, Panthera leo
 n02102318|191|Hund|Dog|cocker spaniel, English cocker spaniel, cocker
 n02100877|192|Hund|Dog|Irish setter, red setter
 n02074367|193|Seekuh|Dugong|dugong, Dugong dugon
 n02504013|194|Elefant|Elephant|Indian elephant, Elephas maximus
-n02363005|195|Bieber|Beaver|beaver
+n02363005|195|Biber|Beaver|beaver
 n02102480|196|Hund|Dog|Sussex spaniel
 n02113023|197|Hund|Dog|Pembroke, Pembroke Welsh corgi
 n02086646|198|Hund|Dog|Blenheim spaniel
 n02497673|199|Lemur|Lemur|Madagascar cat, ring-tailed lemur, Lemur catta
 n02087394|200|Hund|Dog|Rhodesian ridgeback
-n02127052|201|Wildkatze|Wild cat|lynx, catamount
+n02127052|201|Raubkatze|Big cat|lynx, catamount
 n02116738|202|Hyäne|Hyena|African hunting dog, hyena dog, Cape hunting dog, Lycaon pictus
 n02488291|203|Affe|Monkey|langur
 n02091244|204|Hund|Dog|Ibizan hound, Ibizan Podenco
 n02114367|205|Wolf|Wolf|timber wolf, grey wolf, gray wolf, Canis lupus
-n02130308|206|Wildkatze|Wild cat|cheetah, chetah, Acinonyx jubatus
+n02130308|206|Raubkatze|Big cat|cheetah, chetah, Acinonyx jubatus
 n02089973|207|Hund|Dog|English foxhound
 n02105251|208|Hund|Dog|briard
 n02134418|209|Bär|Bear|sloth bear, Melursus ursinus, Ursus ursinus
@@ -213,7 +213,7 @@ n02106662|211|Hund|Dog|German shepherd, German shepherd dog, German police dog, 
 n02444819|212|Otter|Otter|otter
 n01882714|213|Koala|Koala|koala, koala bear, kangaroo bear, native bear, Phascolarctos cinereus
 n01871265|214|Elefant|Elephant|tusker
-n01872401|215|Igel|Anteater|echidna, spiny anteater, anteater
+n01872401|215|Ameisenigel/Ameisenbär|(Spiny) Anteater|echidna, spiny anteater, anteater
 n01877812|216|Känguru|Kangaroo|wallaby, brush kangaroo
 n01873310|217|Schnabeltier|Platypus|platypus, duckbill, duckbilled platypus, duck-billed platypus, Ornithorhynchus anatinus
 n01883070|218|Wombat|Wombat|wombat
@@ -224,7 +224,7 @@ n04254680|222|Ball|Ball|soccer ball
 n02672831|223|Akkordeon|Accordion|accordion, piano accordion, squeeze box
 n02219486|224|Ameise|Ant|ant, emmet, pismire
 n02317335|225|Seestern|Starfish|starfish, sea star
-n01968897|226|Perlboot|Nautilus|chambered nautilus, pearly nautilus, nautilus
+n01968897|226|Meeresschnecke|Nautilus|chambered nautilus, pearly nautilus, nautilus
 n03452741|227|Klavier|Piano|grand piano, grand
 n03642806|228|Laptop|Laptop|laptop, laptop computer
 n07745940|229|Erdbeere|Strawberry|strawberry
@@ -271,7 +271,7 @@ n03594945|269|Auto|Car|jeep, landrover
 n03670208|270|Limousine|Limousine|limousine, limo
 n03770679|271|Auto|Car|minivan
 n03777568|272|Auto|Car|Model T
-n04037443|273|Rennfahrer|Race car|racer, race car, racing car
+n04037443|273|Rennauto|Race car|racer, race car, racing car
 n04285008|274|Auto|Car|sports car, sport car
 n03444034|275|Go-Kart|Go-kart|go-kart
 n03445924|276|Golfwagen|Golf cart|golfcart, golf cart
@@ -286,7 +286,7 @@ n03796401|284|Lastkraftwagen|Truck|moving van
 n03977966|285|Auto|Car|Police van, police wagon, paddy wagon, patrol wagon, wagon, black Maria
 n04065272|286|Wohnmobil|RV|recreational vehicle, RV, R.V.
 n04335435|287|Straßenbahn|Tram|streetcar, tram, tramcar, trolley, trolley car
-n04252077|288|Snowmobil|Snowmobile|snowmobile
+n04252077|288|Schneemobil|Snowmobile|snowmobile
 n04465501|289|Traktor|Tractor|tractor
 n03776460|290|Mobilheim|Mobile home|mobile home, manufactured home
 n04482393|291|Dreirad|Tricycle|tricycle, trike, velocipede
@@ -326,14 +326,14 @@ n07754684|324|Jackfrucht|Jackfruit|jackfruit, jak, jack
 n07760859|325|Zimtapfel|Custard apple|custard apple
 n07768694|326|Granatapfel|Pomegranate|pomegranate
 n12267677|327|Eichel|Acorn|acorn
-n12620546|328|Hüfte|Rosehip|hip, rose hip, rosehip
+n12620546|328|Hagebutte|Rosehip|hip, rose hip, rosehip
 n13133613|329|Mais|Corn|ear, spike, capitulum
 n11879895|330|Raps|Rapeseed|rapeseed
 n12144580|331|Mais|Corn|corn
 n12768682|332|Kastanie|Buckeye|buckeye, horse chestnut, conker
-n03854065|333|Organ|Organ|organ, pipe organ
+n03854065|333|Orgel|Organ|organ, pipe organ
 n04515003|334|Klavier|Piano|upright, upright piano
-n03017168|335|Glockenspiel|Bell|chime, bell, gong
+n03017168|335|Glockenspiel/Gong|Chime/gong|chime, bell, gong
 n03249569|336|Trommel|Drum|drum, membranophone, tympan
 n03447721|337|Gong|Gong|gong, tam-tam
 n03720891|338|Maraca|Maraca|maraca
@@ -343,9 +343,9 @@ n02787622|341|Banjo|Banjo|banjo
 n02992211|342|Cello|Cello|cello, violoncello
 n04536866|343|Violine|Violin|violin, fiddle
 n03495258|344|Harfe|Harp|harp
-n02676566|345|Guitarre|Guitar|acoustic guitar
-n03272010|346|Guitarre|Guitar|electric guitar
-n03110669|347|Kornett|Cornet|cornet, horn, trumpet, trump
+n02676566|345|Gitarre|Guitar|acoustic guitar
+n03272010|346|Gitarre|Guitar|electric guitar
+n03110669|347|Blechblasinstrument|Brass instrument|cornet, horn, trumpet, trump
 n03394916|348|Horn|Horn|French horn, horn
 n04487394|349|Posaune|Trombone|trombone
 n03494278|350|Mundharmonika|Harmonica|harmonica, mouth organ, harp, mouth harp
@@ -376,7 +376,7 @@ n03649909|374|Rasenmäher|Lawn mower|lawn mower, mower
 n03481172|375|Hammer|Hammer|hammer
 n03109150|376|Korkenzieher|Corkscrew|corkscrew, bottle screw
 n02951585|377|Dosenöffner|Can opener|can opener, tin opener
-n03970156|378|Stempel|Plunger|plunger, plumber's helper
+n03970156|378|Pömpel|Plunger|plunger, plumber's helper
 n04154565|379|Schraubenzieher|Screwdriver|screwdriver
 n04208210|380|Schaufel|Shovel|shovel
 n03967562|381|Pflug|Plough|plow, plough
@@ -505,7 +505,7 @@ n04592741|503|Flugzeug|Airplane|wing
 n03876231|504|Pinsel|Paintbrush|paintbrush
 n03483316|505|Föhn|Blow dryer|hand blower, blow dryer, blow drier, hair dryer, hair drier
 n03868863|506|Sauerstoffmaske|Oxygen mask|oxygen mask
-n04251144|507|Schnorchen|Snorkel|snorkel
+n04251144|507|Schnorchel|Snorkel|snorkel
 n03691459|508|Lautsprecher|Speaker|loudspeaker, speaker, speaker unit, loudspeaker system, speaker system
 n03759954|509|Mikrofon|Microphone|microphone, mike
 n04152593|510|Bildschirm|Screen|screen, CRT screen
@@ -545,7 +545,7 @@ n03085013|543|Tastatur|Keyboard|computer keyboard, keypad
 n04505470|544|Tastatur|Keyboard|typewriter keyboard
 n03126707|545|Kran|Crane|crane
 n03666591|546|Feuerzeug|Lighter|lighter, light, igniter, ignitor
-n02666196|547|Abakus|Abacus|abacus
+n02666196|547|Rechenrahmen|Abacus|abacus
 n02977058|548|Geldautomat|Cash machine|cash machine, cash dispenser, automated teller machine, automatic teller machine, automated teller, automatic teller, ATM
 n04238763|549|Rechenschieber|Slide rule|slide rule, slipstick
 n03180011|550|Computer|Computer|desktop computer
@@ -574,7 +574,7 @@ n04019541|572|Puck|Hockey puck|puck, hockey puck
 n03492542|573|Festplatte|Hard disk|hard disc, hard disk, fixed disk
 n04355933|574|Sonnenbrille|Sunglasses|sunglass
 n03929660|575|Plektron|Guitar pick|pick, plectrum, plectron
-n02965783|576|Spiegel|Car mirror|car mirror
+n02965783|576|Außenspiegel|Car mirror|car mirror
 n04258138|577|Solarschale|Solar collector|solar dish, solar collector, solar furnace
 n04074963|578|Fernbedienung|Remote control|remote control, remote
 n03208938|579|Bremse|Disk brake|disk brake, disc brake
@@ -590,12 +590,12 @@ n03803284|588|Maulkorb|Muzzle|muzzle
 n04162706|589|Sicherheitsgurt|Seat belt|seat belt, seatbelt
 n04228054|590|Ski|Ski|ski
 n02948072|591|Kerze|Candle|candle, taper, wax light
-n03590841|592|Laterne|Jack o'lantern|jack-o'-lantern
+n03590841|592|Kürbislaterne|Jack o'lantern|jack-o'-lantern
 n04286575|593|Scheinwerferlicht|Spotlight|spotlight, spot
 n04456115|594|Fackel|Torch|torch
 n03814639|595|Halskrause|Neck brace|neck brace
 n03933933|596|Pier|Pier|pier
-n04485082|597|Dreibein|Tripod|tripod
+n04485082|597|Stativ|Tripod|tripod
 n03733131|598|Maibaum|Maypole|maypole
 n03794056|599|Mausefalle|Mousetrap|mousetrap
 n04275548|600|Spinnennetz|Spider web|spider web, spider's web
@@ -631,7 +631,7 @@ n02190166|629|Fliege|Fly|fly
 n02206856|630|Biene|Bee|bee
 n02226429|631|Heuschrecke|Grasshopper|grasshopper, hopper
 n02229544|632|Heuschrecke|Grasshopper|cricket
-n02231487|633|Gehstock|Stick insect|walking stick, walkingstick, stick insect
+n02231487|633|Stabheuschrecke|Stick insect|walking stick, walkingstick, stick insect
 n02233338|634|Küchenschabe|Cockroach|cockroach, roach
 n02236044|635|Gottesanbeterin|Mantis|mantis, mantid
 n02256656|636|Zikade|Cicada|cicada, cicala
@@ -674,7 +674,7 @@ n04596742|672|Pfanne|Frying pan|wok
 n02939185|673|Topf|Cooking pot|caldron, cauldron
 n03063689|674|Kaffeekanne|Coffeepot|coffeepot
 n04398044|675|Teekanne|Teapot|teapot
-n04270147|676|Spachtel|Spatula|spatula
+n04270147|676|Pfannenwender|Spatula|spatula
 n02699494|677|Altar|Altar|altar
 n04486054|678|Triumphbogen|Triumphal arch|triumphal arch
 n03899768|679|Terrasse|Patio|patio, terrace
@@ -710,7 +710,7 @@ n03089624|708|Süßwarengeschäft|Confectionery|confectionery, confectionary, ca
 n04200800|709|Schuhgeschäft|Shoe store|shoe shop, shoe-shop, shoe store
 n04443257|710|Tabakgeschäft|Tobacco shop|tobacco shop, tobacconist shop, tobacconist
 n04462240|711|Spielwarenladen|Toyshop|toyshop
-n03388043|712|Brunnen|Fountain|fountain
+n03388043|712|Springbrunnen|Fountain|fountain
 n03042490|713|Felsenbehausung|Cliff dwelling|cliff dwelling
 n04613696|714|Jurte|Yurt|yurt
 n03216828|715|Dock|Dock|dock, dockage, docking facility
@@ -723,15 +723,15 @@ n03000134|721|Zaun|Fence|chainlink fence
 n03930313|722|Zaun|Fence|picket fence, paling
 n04604644|723|Zaun|Fence|worm fence, snake fence, snake-rail fence, Virginia fence
 n04326547|724|Mauer|Stone wall|stone wall
-n03459775|725|Gitter|Car grille|grille, radiator grille
-n04239074|726|Tür|Sliding door|sliding door
+n03459775|725|Kühlergrill|Radiator grille|grille, radiator grille
+n04239074|726|Schiebetür|Sliding door|sliding door
 n04501370|727|Drehkreuz|Turnstile|turnstile
 n03792972|728|Zelt|Tent|mountain tent
 n04149813|729|Anzeigetafel|Scoreboard|scoreboard
 n03530642|730|Bienenwabe|Honeycomb|honeycomb
 n03961711|731|Geschirrständer|Plate rack|plate rack
 n03903868|732|Sockel|Pedestal|pedestal, plinth, footstall
-n02814860|733|Leuchtfeuer|Beacon|beacon, lighthouse, beacon light, pharos
+n02814860|733|Leuchtturm|Lighthouse|beacon, lighthouse, beacon light, pharos
 n07711569|734|Kartoffelpüree|Mashed potatoes|mashed potato
 n07720875|735|Paprika|Bell pepper|bell pepper
 n07714571|736|Kohlkopf|Cabbage|head cabbage
@@ -786,7 +786,7 @@ n03379051|784|Helm|Helmet|football helmet
 n02807133|785|Bademütze|Swimming cap|bathing cap, swimming cap
 n04399382|786|Teddy|Teddy bear|teddy, teddy bear
 n03527444|787|Holster|Holster|holster
-n03983396|788|Korken|Soda bottle|pop bottle, soda bottle
+n03983396|788|Flasche|Bottle|pop bottle, soda bottle
 n03924679|789|Drucker|Printer|photocopier
 n04532106|790|Kleidungsstück|Clothing|vestment
 n06785654|791|Kreuzworträtsel|Crossword puzzle|crossword puzzle, crossword
@@ -809,7 +809,7 @@ n02799071|807|Ball|Ball|baseball
 n03314780|808|Puder|Face powder|face powder
 n04141327|809|Scheide|Scabbard|scabbard
 n04357314|810|Sonnencreme|Sunscreen|sunscreen, sunblock, sun blocker
-n02823750|811|Glas|Beer glass|beer glass
+n02823750|811|Bierglas|Beer glass|beer glass
 n13052670|812|Pilz|Mushroom|hen-of-the-woods, hen of the woods, Polyporus frondosus, Grifola frondosa
 n07583066|813|Guacamole|Guacamole|guacamole
 n03637318|814|Lampe|Lamp|lampshade, lamp shade
@@ -821,12 +821,12 @@ n04560804|819|Wasserkrug|Water jug|water jug
 n02909870|820|Eimer|Bucket|bucket, pail
 n03207743|821|Lappen|Dishcloth|dishrag, dishcloth
 n04263257|822|Schüssel|Bowl|soup bowl
-n07932039|823|Eggnog|Eggnog|eggnog
+n07932039|823|Eierpunsch|Eggnog|eggnog
 n03786901|824|Mörser|Mortar|mortar
 n04479046|825|Kleidungsstück|Clothing|trench coat
 n03873416|826|Paddel|Paddle|paddle, boat paddle
 n02999410|827|Kette|Chain|chain
-n04367480|828|Abstrich|Mop|swab, swob, mop
+n04367480|828|Schrubber|Mop|swab, swob, mop
 n03775546|829|Schüssel|Bowl|mixing bowl
 n07875152|830|Fleischpastete|Meat pie|potpie
 n04591713|831|Wein|Wine|wine bottle
@@ -847,7 +847,7 @@ n02730930|845|Schürze|Apron|apron
 n04023962|846|Boxsack|Punching bag|punching bag, punch bag, punching ball, punchball
 n02769748|847|Rucksack|Backpack|backpack, back pack, knapsack, packsack, rucksack, haversack
 n10148035|848|Bräutigam|Bridegroom|groom, bridegroom
-n02817516|849|Bärenfell|Fur cap|bearskin, busby, shako
+n02817516|849|Pelzmütze|Fur cap|bearskin, busby, shako
 n03908714|850|Bleistiftspitzer|Pencil sharpener|pencil sharpener
 n02906734|851|Besen|Broom|broom
 n03788365|852|Netz|Mosquito net|mosquito net
@@ -875,7 +875,7 @@ n07684084|873|Baguette|Baguette|French loaf
 n04522168|874|Vase|Vase|vase
 n03764736|875|Milchkanne|Milk can|milk can
 n04118538|876|Ball|Ball|rugby ball
-n03887697|877|Tuch|Paper towel|paper towel
+n03887697|877|Papiertuch|Paper towel|paper towel
 n13044778|878|Pilz|Mushroom|earthstar
 n03291819|879|Umschlag|Envelope|envelope
 n03770439|880|Kleidungsstück|Clothing|miniskirt, mini
@@ -900,9 +900,9 @@ n03127925|898|Kiste|Crate|crate
 n04584207|899|Perrücke|Wig|wig
 n07880968|900|Burrito|Burrito|burrito
 n03937543|901|Tabletten|Pill bottle|pill bottle
-n03000247|902|Rüstung|Chain mail|chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour
+n03000247|902|Kettenhemd|Chain mail|chain mail, ring mail, mail, chain armor, chain armour, ring armor, ring armour
 n04418357|903|Vorhang|Theatre curtain|theater curtain, theatre curtain
-n04590129|904|Fensterschatten|Window shade|window shade
+n04590129|904|Rollo|Window shade|window shade
 n02795169|905|Fass|Barrel|Barrel, cask
 n04553703|906|Waschbecken|Washbasin|washbasin, handbasin, washbowl, lavabo, wash-hand basin
 n02783161|907|Stift|Pen|ballpoint, ballpoint pen, ballpen, Biro
@@ -931,7 +931,7 @@ n02979186|929|Kassettenspieler|Cassette player|cassette player
 n06596364|930|Buch|Book|comic book
 n03935335|931|Sparschwein|Piggy bank|piggy bank, penny bank
 n06794110|932|Straßenschild|Street sign|street sign
-n02825657|933|Glocke|Bellcote|bell cote, bell cot
+n02825657|933|Glockengiebel|Bellcote|bell cote, bell cot
 n03388183|934|Stift|Pen|fountain pen
 n04591157|935|Krawatte|Necktie|Windsor tie
 n04540053|936|Ball|Ball|volleyball
@@ -966,15 +966,15 @@ n03958227|964|Tüte|Plastic bag|plastic bag
 n04069434|965|Kamera|Camera|reflex camera
 n03188531|966|Windel|Diaper|diaper, nappy, napkin
 n02786058|967|Pflaster|Medical plaster|Band Aid
-n07615774|968|Eis|Ice cream|ice lolly, lolly, lollipop, popsicle
+n07615774|968|Eiscreme|Ice cream|ice lolly, lolly, lollipop, popsicle
 n04525038|969|Samt|Velvet|velvet
 n04409515|970|Ball|Ball|tennis ball
 n03424325|971|Gasmaske|Gasmask|gasmask, respirator, gas helmet
 n03223299|972|Fußabstreifer|Doormat|doormat, welcome mat
 n03680355|973|Schuh|Shoe|Loafer
-n07614500|974|Eis|Ice cream|ice cream, icecream
+n07614500|974|Eiscreme|Ice cream|ice cream, icecream
 n07695742|975|Brezel|Pretzel|pretzel
-n04033995|976|Quilt|Quilt|quilt, comforter, comfort, puff
+n04033995|976|Decke|Quilt|quilt, comforter, comfort, puff
 n03710721|977|Badekleidung|Swimwear|maillot, tank suit
 n04392985|978|Kassettenspieler|Cassette player|tape player
 n03047690|979|Schuh|Shoe|clog, geta, patten, sabot
