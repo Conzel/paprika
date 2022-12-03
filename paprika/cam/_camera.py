@@ -80,9 +80,9 @@ class DummyCamera(Camera):
         super().__init__()
 
     def read(self) -> np.ndarray:
-        source_folder = "../paprika/cam/_dummy_camera"
-        images = os.listdir(source_folder)
-        image_name = random.choice(images)
-        image = cv2.imread(f"{source_folder}/{image_name}")
-        return image
-        # return np.random.random((1080, 1920, 3)) * 255
+        # source_folder = "../paprika/cam/_dummy_camera"
+        # images = os.listdir(source_folder)
+        # image_name = random.choice(images)
+        # image = cv2.imread(f"{source_folder}/{image_name}")
+        # return image
+        return np.random.random((1080, 1920, 3)) * 255

@@ -1,4 +1,4 @@
-id_1|id_2|german_group|english_group|english_labels
+id|position|german_group|english_group|english_labels
 n02119789|1|Fuchs|Fox|kit fox, Vulpes macrotis
 n02100735|2|Hund|Dog|English setter
 n02110185|3|Hund|Dog|Siberian husky
@@ -224,7 +224,7 @@ n04254680|222|Ball|Ball|soccer ball
 n02672831|223|Akkordeon|Accordion|accordion, piano accordion, squeeze box
 n02219486|224|Ameise|Ant|ant, emmet, pismire
 n02317335|225|Seestern|Starfish|starfish, sea star
-n01968897|226|Perlboot|Nautilus|chambered nautilus, pearly nautilus, nautilus
+n01968897|226|Nautilus|Nautilus|chambered nautilus, pearly nautilus, nautilus
 n03452741|227|Klavier|Piano|grand piano, grand
 n03642806|228|Laptop|Laptop|laptop, laptop computer
 n07745940|229|Erdbeere|Strawberry|strawberry
@@ -345,7 +345,7 @@ n04536866|343|Violine|Violin|violin, fiddle
 n03495258|344|Harfe|Harp|harp
 n02676566|345|Gitarre|Guitar|acoustic guitar
 n03272010|346|Gitarre|Guitar|electric guitar
-n03110669|347|Kornett|Cornet|cornet, horn, trumpet, trump
+n03110669|347|Trompete|Trumpet|cornet, horn, trumpet, trump
 n03394916|348|Horn|Horn|French horn, horn
 n04487394|349|Posaune|Trombone|trombone
 n03494278|350|Mundharmonika|Harmonica|harmonica, mouth organ, harp, mouth harp
@@ -723,7 +723,7 @@ n03000134|721|Zaun|Fence|chainlink fence
 n03930313|722|Zaun|Fence|picket fence, paling
 n04604644|723|Zaun|Fence|worm fence, snake fence, snake-rail fence, Virginia fence
 n04326547|724|Mauer|Stone wall|stone wall
-n03459775|725|Kühlergrill|Car grille|grille, radiator grille
+n03459775|725|Kühlergrill|Radiator grille|grille, radiator grille
 n04239074|726|Schiebetür|Sliding door|sliding door
 n04501370|727|Drehkreuz|Turnstile|turnstile
 n03792972|728|Zelt|Tent|mountain tent
@@ -731,7 +731,7 @@ n04149813|729|Anzeigetafel|Scoreboard|scoreboard
 n03530642|730|Bienenwabe|Honeycomb|honeycomb
 n03961711|731|Geschirrständer|Plate rack|plate rack
 n03903868|732|Sockel|Pedestal|pedestal, plinth, footstall
-n02814860|733|Leuchtturm|Beacon|beacon, lighthouse, beacon light, pharos
+n02814860|733|Leuchtturm|Lighthouse|beacon, lighthouse, beacon light, pharos
 n07711569|734|Kartoffelpüree|Mashed potatoes|mashed potato
 n07720875|735|Paprika|Bell pepper|bell pepper
 n07714571|736|Kohlkopf|Cabbage|head cabbage

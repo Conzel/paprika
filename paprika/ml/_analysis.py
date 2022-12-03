@@ -1,3 +1,4 @@
+import copy
 import csv
 import os
 import random
@@ -5,7 +6,7 @@ import json
 import time
 import numpy as np
 import torch
-from ._label_converter import labelConverter
+from ._label_converter import *
 from pytorch_grad_cam import (
     GradCAM,
     ScoreCAM,
@@ -34,13 +35,21 @@ class ClassPrediction:
     """
     Represents a prediction of the neural network.
 
-    label: the name of the class that the neural network predicted.
+    german_label: the name of the class that the neural network predicted, in German.
+    english_label: the name of the class that the neural network predicted, in English.
     score: the confidence of the prediction in percent.
     similar_images: list of flexible length containing the full paths of images that are similar to the input image
     """
 
-    def __init__(self, label: str, score: float, similar_images: List[str]):
-        self.label = label
+    def __init__(
+        self,
+        german_label: str,
+        english_label: str,
+        score: float,
+        similar_images: List[str],
+    ):
+        self.german_label = german_label
+        self.english_label = english_label
         self.score = score
         self.similar_images = similar_images
 
@@ -126,6 +135,10 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
                 T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             ]
         )
+        # use this same dictionary for every image analysis
+        self.subclass_group_dict = construct_subclass_group_dict()
+        # create a copy of this dictionary for every image analysis
+        self.group_score_dict = construct_group_score_dict(self.subclass_group_dict)
 
     def get_most_activated_filters(
         self, layer_string: str, n: int
@@ -205,21 +218,27 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         return visualization
 
-    def get_similar_images(self, path, class_id, nr_images, feature_vector) -> List[str]:
+    def get_similar_images(
+        self, path, class_id, nr_images, feature_vector
+    ) -> List[str]:
         """
         Returns a list of size nr_images containing the full paths of most similar images
         """
 
-        #class_id='n01440764' #for testing purposes
+        # class_id='n01440764' #for testing purposes
         image_full_paths = []
-        enough_images_in_class =True
+        enough_images_in_class = True
 
-        if nr_images !=0:
-            tensor = torch.load(f"{path}{class_id}/{class_id}_activation_tensor.pt").float()
-            dictionary =json.load( open( f"{path}{class_id}/{class_id}_dictionary.json" ) )
+        if nr_images != 0:
+            tensor = torch.load(
+                f"{path}{class_id}/{class_id}_activation_tensor.pt"
+            ).float()
+            dictionary = json.load(open(f"{path}{class_id}/{class_id}_dictionary.json"))
 
-            if len(dictionary)<nr_images:
-                print(f'class {class_id} does not contain enough images') #shouldn't happen, when whole image net is used
+            if len(dictionary) < nr_images:
+                print(
+                    f"class {class_id} does not contain enough images"
+                )  # shouldn't happen, when whole image net is used
                 enough_images_in_class = False
             dot_product = feature_vector[np.newaxis] @ tensor
             indices = torch.topk(dot_product, nr_images).indices.cpu().detach().numpy()
@@ -228,7 +247,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
             for idx in indices[0]:
 
-                #if not enough images in class (shouldn't be the case), the first (and only?) image is shown multiple times to avoid crash of ui
+                # if not enough images in class (shouldn't be the case), the first (and only?) image is shown multiple times to avoid crash of ui
                 if enough_images_in_class:
                     image = dictionary[str(idx)]
                 else:
@@ -247,70 +266,75 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         The images are returned in descending order of likelihood.
         """
-        #calculate predictions and activation in feature space
+        # calculate predictions and activation in feature space
         image = self.preprocess_image(self.image).unsqueeze(0)
         layer_string = "mixed5b"
         layer_number = filter_strings_to_numbers[layer_string]
         layer = list(self.model.children())[layer_number]
         activations = SaveFeatures(layer)
-        predictions = self.model(image)[0][1:-7]
+        predictions = self.model(image)[0]
         mean_act = [
             activations.features[0, i].mean()
             for i in range(activations.features.shape[1])
         ]
-        sum = torch.sum(torch.tensor(mean_act))
-        mean_act= torch.tensor(mean_act) / sum
+        act_sum = torch.sum(torch.tensor(mean_act))
+        mean_act = torch.tensor(mean_act) / act_sum
 
+        # copy score dictionary
+        group_score_dict = copy.deepcopy(self.group_score_dict)
 
-        translations = self.read_csv("translations.csv")
-        folder_path = "../" + imagenet_relative_path
+        # change group_score_dict to contain the maximum score of each group and the corresponding id
+        for subclass_position in range(1, 1001):
+            prediction = predictions[subclass_position].item()
+            subclass = self.subclass_group_dict[subclass_position]
+            if (
+                prediction
+                > group_score_dict[
+                    (subclass.german_group, subclass.english_group)
+                ].max_score
+            ):
+                group_score_dict[
+                    (subclass.german_group, subclass.english_group)
+                ].max_score = prediction
+                group_score_dict[
+                    (subclass.german_group, subclass.english_group)
+                ].id = subclass.id
 
-        # Create Empty Dict with all Categories in it:
-        translated_classes = self.create_translation_class_dict()
-        label_to_class_id ={}
-
-        #print("adding percentages")
-        # For every prediction: add the percentage to the translated class
-        for idx in range(1, 1000):
-            label, class_number = labelConverter()[
-                idx + 1
-            ]
-
-            prediction = predictions[idx].item()
-            translated_class = translations[label]
-            label_to_class_id[translated_class]=class_number
-            translated_classes[translated_class] += prediction
-
-
-        ordered_predictions = {
-            k: v
-            for k, v in sorted(
-                translated_classes.items(), key=lambda x: x[1], reverse=True
+        # normalise group_score_dict max_scores such that they add up to ~100
+        group_score_sum = sum(
+            [group_score.max_score for group_score in group_score_dict.values()]
+        )
+        group_score_dict = {
+            group_id: GroupScore(
+                group_score.id, group_score.max_score / group_score_sum * 100
             )
+            for group_id, group_score in group_score_dict.items()
         }
-        
-        # Calculate sum of all percentages (not exaclty 100)
-        sum = 0
-        for elem in ordered_predictions:
-            sum = sum + ordered_predictions[elem]
 
+        # sort dictionary
+        group_score_dict = dict(
+            sorted(
+                group_score_dict.items(),
+                key=lambda item: item[1].max_score,
+                reverse=True,
+            )
+        )
+
+        # keep only n_predictions classes
+        group_score_list = list(group_score_dict.items())[:n_predictions]
+
+        # create the final ClassPrediction instances
         final_predictions = []
-        i = 0
-
-        for pred_label in ordered_predictions:
-            if i <= n_predictions - 1:
-                class_prediction = ClassPrediction(
-                    label=pred_label,
-                    score=ordered_predictions[pred_label] / sum * 100,
-                    similar_images=self.get_similar_images(
-                folder_path, label_to_class_id[pred_label], n_images,mean_act
-            ),
-                )
-                final_predictions.append(class_prediction)
-                i = i + 1
-            else:
-                break
-
+        for group_id, group_score in group_score_list:
+            class_prediction = ClassPrediction(
+                german_label=group_id.german_group,
+                english_label=group_id.english_group,
+                score=group_score.max_score,
+                similar_images=self.get_similar_images(
+                    imagenet_relative_path, group_score.id, n_images, mean_act
+                ),
+            )
+            final_predictions.append(class_prediction)
 
         return final_predictions
 
