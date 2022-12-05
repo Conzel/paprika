@@ -13,6 +13,8 @@ torchvision = {url="https://download.pytorch.org/whl/cu116/torchvision-0.13.1%2B
 PyQt5 = "^5.15.7"
 grad-cam = {git = "https://github.com/jacobgil/pytorch-grad-cam.git"}
 torch-lucent = {git = "https://github.com/greentfrapp/lucent.git"}
+pandas = "^1.5.2"
+scikit-image = "^0.19.3"
 
 [build-system]
 requires = ["poetry-core"]
