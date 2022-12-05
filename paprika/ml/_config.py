@@ -27,3 +27,4 @@ filter_strings_to_numbers = {
     "mixed5a": 128,
     "mixed5b": 136,
 }
+device_name = "cuda"
