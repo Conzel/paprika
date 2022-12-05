@@ -120,14 +120,29 @@ class SaveFeatures:
         self.hook.remove()
 
 
+
 class Inceptionv1Analysis(NeuralNetworkAnalysis):
     """
     Performs image analysis using Inceptionv1.
     """
+    def get_device():
+        if device_name == "cuda" and not torch.cuda.is_available():
+            print("WARNING: Cuda is not enable, but specified in config. Switching to CPU.")
+        if torch.cuda.is_available():
+            return torch.device("cuda")
+        else:
+            return torch.device("cpu")
+    # use this same dictionary for every image analysis
+    subclass_group_dict = construct_subclass_group_dict()
+    # create a copy of this dictionary for every image analysis
+    group_score_dict = construct_group_score_dict(subclass_group_dict)
+    device = get_device()
+    model = inceptionv1(pretrained=True).eval().to(device)
+    
+
 
     def __init__(self, img: np.ndarray):
         """Performs the analysis on the given image."""
-        self.model = inceptionv1(pretrained=True).eval()
         self.image = Image.fromarray(img)
         self.preprocess_image = T.Compose(
             [
@@ -135,10 +150,6 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
                 T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             ]
         )
-        # use this same dictionary for every image analysis
-        self.subclass_group_dict = construct_subclass_group_dict()
-        # create a copy of this dictionary for every image analysis
-        self.group_score_dict = construct_group_score_dict(self.subclass_group_dict)
 
     def get_most_activated_filters(
         self, layer_string: str, n: int
@@ -157,7 +168,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         layer_number = filter_strings_to_numbers[layer_string]
         layer = list(self.model.children())[layer_number]
         activations = SaveFeatures(layer)
-        image = self.preprocess_image(self.image).unsqueeze(0)
+        image = self.preprocess_image(self.image).unsqueeze(0).to(self.device)
         predictions = self.model(image)[0]
         mean_act = [
             activations.features[0, i].mean()
@@ -199,7 +210,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         # Construct the CAM object once, and then re-use it on many images:
         cam = GradCAMPlusPlus(
-            model=self.model, target_layers=target_layers, use_cuda=False
+            model=self.model, target_layers=target_layers, use_cuda=torch.cuda.is_available()
         )
         targets = None  # [ClassifierOutputTarget(1000)]
         # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
@@ -267,7 +278,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         The images are returned in descending order of likelihood.
         """
         # calculate predictions and activation in feature space
-        image = self.preprocess_image(self.image).unsqueeze(0)
+        image = self.preprocess_image(self.image).unsqueeze(0).to(self.device)
         layer_string = "mixed5b"
         layer_number = filter_strings_to_numbers[layer_string]
         layer = list(self.model.children())[layer_number]
