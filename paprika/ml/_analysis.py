@@ -443,6 +443,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         selected images in the folder specified by path.
         """
         files = os.listdir(path)
+        files = [file for file in files if ".JPEG" in file]
         images = random.sample(files, k=nr_images)
         image_full_paths = []
         for image in images:
@@ -460,23 +461,44 @@ class DummyAnalysis(NeuralNetworkAnalysis):
 
         The images are returned in descending order of likelihood.
         """
+        # dummy data with longest labels
         class_predictions = []
-        folder_path = "../" + imagenet_relative_path
-        possible_activations = np.linspace(0.08, 4.532).tolist()
-        activations = random.choices(possible_activations, k=n_predictions)
-        activations.sort(reverse=True)
-        classes = open("../paprika/ml/LOC_synset_mapping.txt").read().split("\n")[:-1]
-        for activation in activations:
-            prediction_class = random.choice(classes)
-            class_id, label_list = prediction_class.split(None, 1)
-            if "," in label_list:
-                label, label_list = label_list.split(",", 1)
-            else:
-                label = label_list
-            images = self.get_random_images_from_folder(
-                f"{folder_path}{class_id}", n_images
+        subclass_group_dict = construct_subclass_group_dict()
+        subclass_group_dict = dict(
+            sorted(
+                subclass_group_dict.items(),
+                key=lambda item: len(item[1].german_group),
+                reverse=True,
             )
-            class_predictions.append(ClassPrediction(label, activation, images))
+        )
+        subclass_group_list = list(subclass_group_dict.items())[:10]
+        possible_activations = np.linspace(12.23, 37.88).tolist()
+        activations = random.choices(possible_activations, k=n_predictions)
+        for activation in activations:
+            subclass = random.choice(subclass_group_list)[1]
+            images = self.get_random_images_from_folder(f"{imagenet_relative_path}{subclass.id}", n_images)
+            class_predictions.append(ClassPrediction(subclass.german_group, subclass.english_group, activation, images))
+
+        # random labels
+        # class_predictions = []
+        # folder_path = "../" + imagenet_relative_path
+        # possible_activations = np.linspace(0.08, 4.532).tolist()
+        # activations = random.choices(possible_activations, k=n_predictions)
+        # activations.sort(reverse=True)
+        # classes = open("../paprika/ml/LOC_synset_mapping.txt").read().split("\n")[:-1]
+        # for activation in activations:
+        #     prediction_class = random.choice(classes)
+        #     class_id, label_list = prediction_class.split(None, 1)
+        #     if "," in label_list:
+        #         label, label_list = label_list.split(",", 1)
+        #     else:
+        #         label = label_list
+        #     images = self.get_random_images_from_folder(
+        #         f"{folder_path}{class_id}", n_images
+        #     )
+        #     class_predictions.append(ClassPrediction(label, activation, images))
+
+        # prezel dummy data
         # activations = [87.4, 3.1, 1.7, 1.6, 0.9]
         # predictions = [("Brezel", "Pretzel", "n07695742"), ("Schnalle", "Buckle", "n02910353"), ("Haken", "Hook", "n03532672"), ("Wurm", "Worm", "n01924916"), ("Lupe", "Loupe", "n03692522")]
         # for i in range(5):

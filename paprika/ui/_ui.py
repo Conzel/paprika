@@ -224,8 +224,26 @@ class UserInterface(QObject):
         It displays the new image.
         """
         pixmap = camera_image_to_pixmap(image)
-        pixmap = resized_pixmap(pixmap, camera_capture_size)
+        pixmap = resized_pixmap_by_height(pixmap, camera_capture_size)
         self.running_camera_label.setPixmap(pixmap)
+
+    def get_new_image_widths(self, types_of_images: List[str], image_widths: List[int]) -> List[int]:
+        """
+        Returns a list of the width that the images need to be cropped to.
+        The new image widths sum up to at most similar_images_width_sum.
+
+        types_of_images contains "v" and "h" depending on the image being vertical/horizontal
+        image_widths contains the image widths obtained after rescaling to similar_image_height height
+        """
+        width_decrement_step = 10
+        while sum(image_widths) > similar_images_width_sum:
+            for i in range(nr_imagenet_images):
+                # remove width from non-vertical image
+                if types_of_images[i] != "v":
+                    # do not remove width if the image is already too narrow
+                    if image_widths[i] - width_decrement_step > similar_image_vertical_width:
+                        image_widths[i] -= width_decrement_step
+        return image_widths
 
     def on_new_analysis(self, analysis_dto: AnalysisResultsDTO):
         """
@@ -235,7 +253,7 @@ class UserInterface(QObject):
         # set camera feed to new capture
         image = analysis_dto.original_image
         pixmap = camera_image_to_pixmap(image)
-        pixmap = resized_pixmap(pixmap, camera_capture_size)
+        pixmap = resized_pixmap_by_height(pixmap, camera_capture_size)
         self.frozen_camera_label.setPixmap(pixmap)
 
         # update the filter images in each layer
@@ -246,7 +264,7 @@ class UserInterface(QObject):
                 image_path, filter_id, filter_activation = activated_filters[i]
                 pixmap = QPixmap(image_path)
                 self.filter_image_labels[layer][i].setPixmap(
-                    resized_pixmap(pixmap, filter_size)
+                    resized_pixmap_by_height(pixmap, filter_size)
                 )
                 self.filter_text_labels[layer][i].setText(
                     f"Filter {filter_id}  –  {round(filter_activation, 1)}%"
@@ -255,7 +273,7 @@ class UserInterface(QObject):
         # update the saliency map
         saliency_image = analysis_dto.saliency_map
         pixmap = image_to_pixmap(saliency_image)
-        pixmap = resized_pixmap(pixmap, camera_capture_size)
+        pixmap = resized_pixmap_by_height(pixmap, camera_capture_size)
         self.saliency_image_label.setPixmap(pixmap)
 
         # update the predictions
@@ -267,15 +285,34 @@ class UserInterface(QObject):
             german_text = prediction.german_label
             self.prediction_german_labels[i].setText(german_text)
             self.prediction_english_labels[i].setText(english_text)
+            # first decide how the imagenet images need to be cropped
+            types_of_images = []
+            image_widths = []
+            for j in range(nr_imagenet_images):
+                imagenet_image = prediction.similar_images[j]
+                pixmap = resized_pixmap_by_height(QPixmap(imagenet_image), similar_image_height)
+                width = pixmap.width()
+                # vertical image that needs its top and bottom margins cropped
+                if width < similar_image_vertical_width:
+                    types_of_images.append("v")
+                    image_widths.append(similar_image_vertical_width)
+                else:
+                    # horizontal image that needs its left and right margins cropped
+                    types_of_images.append("h")
+                    image_widths.append(width)
+            new_image_widths = self.get_new_image_widths(types_of_images, image_widths)
+            
             for j in range(nr_imagenet_images):
                 imagenet_image = prediction.similar_images[j]
                 pixmap = QPixmap(imagenet_image)
-                if i != 0:
-                    image_size = imagenet_small_size
+                if types_of_images[j] == "v":
+                    pixmap = resized_pixmap_by_width(pixmap, similar_image_vertical_width)
+                    pixmap = cropped_vertical_pixmap(pixmap, similar_image_height)
                 else:
-                    image_size = imagenet_large_size
+                    pixmap = resized_pixmap_by_height(pixmap, similar_image_height)
+                    pixmap = cropped_horizontal_pixmap(pixmap, new_image_widths[j])
                 self.prediction_image_labels[i][j].setPixmap(
-                    resized_pixmap(pixmap, image_size)
+                    pixmap
                 )
 
         self.arrows_animation.start()

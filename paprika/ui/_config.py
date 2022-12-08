@@ -5,8 +5,9 @@ Contains constants for the UI.
 # image and spacing sizes
 camera_capture_size = 750
 filter_size = 370
-imagenet_small_size = 125
-imagenet_large_size = 145
+similar_image_height = 160
+similar_image_vertical_width = 100  # the width that a vertical image is cropped to
+similar_images_width_sum = 550  # the max width sum of the similar images in one line
 vertical_spacing_filters = 20
 frame_margin_layer = (
     20,
@@ -17,13 +18,13 @@ frame_margin_layer = (
 frame_width = 4
 horizontal_spacing_filters = 15
 predictions_labels_spacing = (
-    10  # increasing this decreases the space between the German and the English label
+    15  # increasing this decreases the space between the German and the English label
 )
 predictions_edge_spacing = (
-    20  # spacing on the left and right sides of one line of predictions with images
+    5  # spacing on the left and right sides of one line of predictions with images
 )
-predictions_bottom_spacing = 50  # spacing under the predictions
-predictions_stretch = (2, 3, 10)  # ratio of amounts of space for score, label and images
+predictions_bottom_spacing = 5  # spacing under the predictions
+predictions_stretch = (2, 5, 9)  # ratio of amounts of space for score, label and images
 
 # arrow configs
 nr_arrows = 8
@@ -33,7 +34,7 @@ visible_arrows_to_predictions = [4]
 visible_arrows_between_filters = range(nr_arrows)
 animation_milliseconds = (1000, 500, 1000)  # fade in, opaque, fade out
 
-analysis_refresh_seconds = 0.001
+analysis_refresh_seconds = 3
 
 huge_font_size = 28
 large_font_size = 24
@@ -46,6 +47,7 @@ english_font = "Yu Gothic UI Semilight"
 german_colour = "#4b4b4b"
 english_colour = "#212121"
 background_colour = "#f0f0f0"
+top_prediction_background_colour = "#dcdcdc"
 
 # screen number for each action
 # set each of them to 0, 1, 2 or 3 (multiple can have the same value)

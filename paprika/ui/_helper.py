@@ -5,7 +5,7 @@ from typing import List
 from PIL import Image
 from skimage.transform import resize
 import numpy as np
-from PyQt5.QtCore import Qt, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup
+from PyQt5.QtCore import QRect, Qt, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup
 from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont
 from PyQt5.QtWidgets import (
     QWidget,
@@ -116,12 +116,35 @@ def camera_image_to_pixmap(captured_image: np.ndarray) -> QPixmap:
     return image_to_pixmap(cropped_image)
 
 
-def resized_pixmap(pixmap: QPixmap, size: int) -> QPixmap:
+def resized_pixmap_by_height(pixmap: QPixmap, height: int) -> QPixmap:
     """
-    Returns the pixmap rescaled to height size.
+    Returns the pixmap rescaled to given height.
     """
-    return pixmap.scaledToHeight(size)
+    return pixmap.scaledToHeight(height)
 
+def resized_pixmap_by_width(pixmap: QPixmap, width: int) -> QPixmap:
+    """
+    Returns the pixmap rescaled to given width.
+    """
+    return pixmap.scaledToWidth(width)
+
+def cropped_vertical_pixmap(pixmap: QPixmap, new_height: int) -> QPixmap:
+    """
+    Returns the cropped pixmap with the new height.
+    The image is cropped in the middle.
+    """
+    top = (pixmap.height() - new_height) // 2
+    rect = QRect(0, top, pixmap.width(), new_height)
+    return pixmap.copy(rect)
+
+def cropped_horizontal_pixmap(pixmap: QPixmap, new_width: int) -> QPixmap:
+    """
+    Returns the cropped pixmap with the new width.
+    The image is cropped in the middle.
+    """
+    left = (pixmap.width() - new_width) // 2
+    rect = QRect(left, 0, new_width, pixmap.height())
+    return pixmap.copy(rect)
 
 def image_with_explanation(
     image_label: QLabel,
@@ -240,7 +263,8 @@ def score_text_image_grid(
     """
     v_layout = QVBoxLayout()
     for i_pred in range(nr_predictions):
-        h_layout = QHBoxLayout()
+        h_layout_frame = QFrame()
+        h_layout = QHBoxLayout(h_layout_frame)
         h_layout.addSpacing(predictions_edge_spacing)
         # add the prediction score to the row
         h_layout.addWidget(score_labels[i_pred], stretch=predictions_stretch[0])
@@ -260,21 +284,22 @@ def score_text_image_grid(
         h_layout.addLayout(image_h_layout, stretch=predictions_stretch[2])
         h_layout.addSpacing(predictions_edge_spacing)
         # add the row to the column
-        v_layout.addLayout(h_layout)
+        v_layout.addWidget(h_layout_frame)
         if i_pred != nr_predictions - 1:
             v_layout.addSpacing(predictions_bottom_spacing)
-        # set fonts with larger font size for the first prediction
-        if i_pred != 0:
-            score_labels[i_pred].setFont(QFont(german_font, font_size_score))
-            german_labels[i_pred].setFont(QFont(german_font, font_size_label))
-            english_labels[i_pred].setFont(QFont(english_font, font_size_label))
-        else:
-            score_labels[i_pred].setFont(QFont(german_font, larger_font_size_score))
-            german_labels[i_pred].setFont(QFont(german_font, larger_font_size_label))
-            english_labels[i_pred].setFont(QFont(english_font, larger_font_size_label))
+        # set fonts
+        score_labels[i_pred].setFont(QFont(german_font, font_size_score))
+        german_labels[i_pred].setFont(QFont(german_font, font_size_label))
+        english_labels[i_pred].setFont(QFont(english_font, font_size_label))
+        # else: # set fonts with larger size for the first prediction
+        #     score_labels[i_pred].setFont(QFont(german_font, larger_font_size_score))
+        #     german_labels[i_pred].setFont(QFont(german_font, larger_font_size_label))
+        #     english_labels[i_pred].setFont(QFont(english_font, larger_font_size_label))
         score_labels[i_pred].setStyleSheet(f"color: {german_colour}")
         german_labels[i_pred].setStyleSheet(f"color: {german_colour}")
         english_labels[i_pred].setStyleSheet(f"color: {english_colour}")
+        if i_pred == 0:
+            h_layout_frame.setStyleSheet(f"background-color: {top_prediction_background_colour}")
     return v_layout
 
 
