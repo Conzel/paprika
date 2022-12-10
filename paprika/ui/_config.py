@@ -25,6 +25,7 @@ predictions_edge_spacing = (
 )
 predictions_bottom_spacing = 5  # spacing under the predictions
 predictions_stretch = (2, 5, 9)  # ratio of amounts of space for score, label and images
+variable_images_width = True  # if the labels are shorter, more space is accorded to the images
 
 # arrow configs
 nr_arrows = 8
@@ -75,9 +76,5 @@ running_camera_english_text = "Camera image"
 # text for screens with lower and higher filters
 
 # text for screen with predictions
-def saliency_map_german_text(prediction: str):
-    return f"Wichtige Teile des Bildes für die Klassifizierung"
-
-
-def saliency_map_english_text(prediction: str):
-    return f"Important parts of the image for classification"
+saliency_map_german_text = "Wichtige Teile des Bildes für die Klassifizierung"
+saliency_map_english_text = "Important parts of the image for classification"

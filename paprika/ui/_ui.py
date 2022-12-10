@@ -199,8 +199,8 @@ class UserInterface(QObject):
         saliency_layout = image_with_explanation(
             self.saliency_image_label,
             large_font_size,
-            saliency_map_german_text("X"),
-            saliency_map_english_text("Y"),
+            saliency_map_german_text,
+            saliency_map_english_text,
             self.saliency_german_label,
             self.saliency_english_label,
         )
@@ -231,7 +231,6 @@ class UserInterface(QObject):
         """
         Returns a list of the width that the images need to be cropped to.
         The new image widths sum up to at most similar_images_width_sum.
-
         types_of_images contains "v" and "h" depending on the image being vertical/horizontal
         image_widths contains the image widths obtained after rescaling to similar_image_height height
         """
@@ -266,9 +265,7 @@ class UserInterface(QObject):
                 self.filter_image_labels[layer][i].setPixmap(
                     resized_pixmap_by_height(pixmap, filter_size)
                 )
-                self.filter_text_labels[layer][i].setText(
-                    f"Filter {filter_id}  –  {round(filter_activation, 1)}%"
-                )
+                # self.filter_text_labels[layer][i].setText(f"{round(filter_activation, 1)}%")
 
         # update the saliency map
         saliency_image = analysis_dto.saliency_map
