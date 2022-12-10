@@ -160,6 +160,7 @@ def image_with_explanation(
     """
     layout = QVBoxLayout()
     layout.addWidget(image_label)
+    layout.addSpacing(camera_capture_spacing)
     image_label.setAlignment(Qt.AlignCenter)
 
     german_text_label.setText(german_text)

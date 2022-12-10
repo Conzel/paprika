@@ -4,16 +4,17 @@ Contains constants for the UI.
 
 # image and spacing sizes
 camera_capture_size = 750
-filter_size = 370
+camera_capture_spacing = 7  # spacing between the camera capture images and the texts underneath
+filter_size = 390
 similar_image_height = 160
 similar_image_vertical_width = 100  # the width that a vertical image is cropped to
 similar_images_width_sum = 550  # the max width sum of the similar images in one line
 vertical_spacing_filters = 20
 frame_margin_layer = (
-    20,
-    20,
-    20,
-    20,
+    15,
+    15,
+    15,
+    15,
 )  # left, top, right, bottom margins between layer content and frame
 frame_width = 4
 horizontal_spacing_filters = 15
@@ -48,7 +49,7 @@ english_font = "Yu Gothic UI Semilight"
 german_colour = "#4b4b4b"
 english_colour = "#212121"
 background_colour = "#f0f0f0"
-top_prediction_background_colour = "#dcdcdc"
+top_prediction_background_colour = "#e2e2e2"
 
 # screen number for each action
 # set each of them to 0, 1, 2 or 3 (multiple can have the same value)
@@ -71,9 +72,6 @@ frozen_camera_german_text = "Analysiertes Bild"
 frozen_camera_english_text = "Analysed image"
 running_camera_german_text = "Kamerabild"
 running_camera_english_text = "Camera image"
-
-
-# text for screens with lower and higher filters
 
 # text for screen with predictions
 saliency_map_german_text = "Wichtige Teile des Bildes für die Klassifizierung"
