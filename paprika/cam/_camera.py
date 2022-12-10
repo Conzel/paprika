@@ -71,6 +71,40 @@ class BufferlessVideoCapture(Camera):
         return self.q.get()
 
 
+class CroppingVideoCapture(Camera):
+    """
+    A class that represents a webcam. The webcam is bufferless, i.e.
+    the read method always returns the latest frame.
+    A cropping of the captured image is returned.
+    """
+
+    def __init__(self, name: Union[str, int], margin_to_crop_size = 100):
+        self.cap = cv2.VideoCapture(name)
+        self.margin_size = margin_to_crop_size
+        if not self.cap.isOpened():
+            raise IOError(f"Cannot open webcam {name}")
+        self.q = queue.Queue()
+        t = threading.Thread(target=self._reader)
+        t.daemon = True
+        t.start()
+
+    def _reader(self):
+        while True:
+            ret, frame = self.cap.read()
+            if not ret:
+                break
+            if not self.q.empty():
+                try:
+                    self.q.get_nowait()  # discard previous (unprocessed) frame
+                except queue.Empty:
+                    pass
+            self.q.put(frame)
+
+    def read(self) -> np.ndarray:
+        image = self.q.get()
+        return image[self.margin_size: -self.margin_size, self.margin_size: -self.margin_size]
+
+
 class DummyCamera(Camera):
     """
     A dummy that returns a random image from the _dummy_camera folder.
