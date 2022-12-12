@@ -4,7 +4,7 @@ delete images that are too small to be passed through the model or with undesire
 
 """
 import os
-import imagesize
+# import imagesize
 import json
 import torch
 from lucent.modelzoo import inceptionv1
@@ -62,7 +62,10 @@ if __name__ == "__main__":
     model = inceptionv1(pretrained=True).eval()
 
     all_classes = os.listdir(f"{source_folder}")
+    counter = 0
     for class_id in all_classes:
+        print(counter)
+        counter += 1
 
         all_images = os.listdir(f"{source_folder}/{class_id}")
         activation_all_images = np.zeros((len(all_images),1024)) # set second argument to length of layer activation
