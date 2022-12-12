@@ -59,20 +59,26 @@ if __name__ == "__main__":
     #choose layer
     layer_string = "mixed5b"
     layer_number = filter_strings_to_numbers[layer_string]
-    model = inceptionv1(pretrained=True).eval()
+    # device = torch.device("cuda")
+    model = inceptionv1(pretrained=True).eval()  #.to(device)
 
     all_classes = os.listdir(f"{source_folder}")
     counter = 0
     for class_id in all_classes:
         print(counter)
+        print(class_id)
         counter += 1
+
+        if counter <= -1:
+            continue
 
         all_images = os.listdir(f"{source_folder}/{class_id}")
         activation_all_images = np.zeros((len(all_images),1024)) # set second argument to length of layer activation
         dictionary_imagenames = {}
 
-        i = 0
+        i = -1
         for image in all_images:
+            i += 1
             image_path = f"{source_folder}/{class_id}/{image}"
             img = np.asarray(Image.open(image_path))
             shape = img.shape
@@ -98,11 +104,13 @@ if __name__ == "__main__":
                 # print('deleted')
                 # print(img.shape)
                 continue
+
+            # if i % 50 != 0:
+            #    continue
+
             im_cropped = preprocess_image(pil_img)
             image = Image.fromarray(img)
-            image = to_tensor(image).unsqueeze(0)
-
-
+            image = to_tensor(image).unsqueeze(0)  #.to(device)
 
 
             #compute layer activation
@@ -114,7 +122,6 @@ if __name__ == "__main__":
                 for i in range(activations.features.shape[1])
             ]
             activation_all_images[i]= torch.tensor(mean_act)/torch.sum(torch.tensor(mean_act)) #save normalizes feature vector
-            i+=1
 
         #save tensor
         torch.save(torch.tensor(activation_all_images.T), f"{source_folder}{class_id}/{class_id}_activation_tensor.pt")
