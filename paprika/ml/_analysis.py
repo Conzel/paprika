@@ -243,7 +243,7 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         if nr_images != 0:
             tensor = torch.load(
                 f"{path}{class_id}/{class_id}_activation_tensor.pt"
-            ).float()
+            ).float().to(self.device)
             dictionary = json.load(open(f"{path}{class_id}/{class_id}_dictionary.json"))
 
             if len(dictionary) < nr_images:
@@ -279,17 +279,17 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         """
         # calculate predictions and activation in feature space
         image = self.preprocess_image(self.image).unsqueeze(0).to(self.device)
-        layer_string = "mixed5b"
-        layer_number = filter_strings_to_numbers[layer_string]
-        layer = list(self.model.children())[layer_number]
-        activations = SaveFeatures(layer)
+        # layer_string = "mixed5b"
+        # layer_number = filter_strings_to_numbers[layer_string]
+        # layer = list(self.model.children())[layer_number]
+        # activations = SaveFeatures(layer)
         predictions = self.model(image)[0]
-        mean_act = [
-            activations.features[0, i].mean()
-            for i in range(activations.features.shape[1])
-        ]
-        act_sum = torch.sum(torch.tensor(mean_act))
-        mean_act = torch.tensor(mean_act) / act_sum
+        # mean_act = [
+        #     activations.features[0, i].mean()
+        #     for i in range(activations.features.shape[1])
+        # ]
+        # act_sum = torch.sum(torch.tensor(mean_act))
+        # mean_act = torch.tensor(mean_act) / act_sum
 
         # copy score dictionary
         group_score_dict = copy.deepcopy(self.group_score_dict)
@@ -341,9 +341,8 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
                 german_label=group_id.german_group,
                 english_label=group_id.english_group,
                 score=group_score.max_score,
-                similar_images=self.get_similar_images(
-                    imagenet_relative_path, group_score.id, n_images, mean_act
-                ),
+                similar_images=self.get_similar_images(imagenet_relative_path, group_score.id, n_images, predictions),
+                # similar_images=self.get_similar_images(imagenet_relative_path, group_score.id, n_images, mean_act),
             )
             final_predictions.append(class_prediction)
 
