@@ -466,12 +466,12 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         subclass_group_dict = dict(
             sorted(
                 subclass_group_dict.items(),
-                key=lambda item: len(item[1].german_group),
+                key=lambda item: len(item[1].english_group),
                 reverse=True,
             )
         )
         subclass_group_list = list(subclass_group_dict.items())[:10]
-        possible_activations = np.linspace(12.23, 37.88).tolist()
+        possible_activations = np.linspace(12.23, 137.88).tolist()
         activations = random.choices(possible_activations, k=n_predictions)
         for activation in activations:
             subclass = random.choice(subclass_group_list)[1]

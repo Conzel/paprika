@@ -6,7 +6,7 @@ from PIL import Image
 from skimage.transform import resize
 import numpy as np
 from PyQt5.QtCore import QRect, Qt, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup
-from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont
+from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont, QFontDatabase
 from PyQt5.QtWidgets import (
     QWidget,
     QLabel,
@@ -17,6 +17,14 @@ from PyQt5.QtWidgets import (
 )
 
 from paprika.ui._config import *
+
+def add_myriad_pro_fonts():
+    """
+    Adds the Myriad Pro Regular and Light fonts to the font database.
+    """
+    font_database = QFontDatabase()
+    font_database.addApplicationFont("../paprika/ui/MyriadPro/MyriadPro-Light.otf")
+    font_database.addApplicationFont("../paprika/ui/MyriadPro/MyriadPro-Regular.otf")
 
 
 def get_full_screen_widgets(app: QGuiApplication):
@@ -174,6 +182,7 @@ def image_with_explanation(
     english_text_label.setAlignment(Qt.AlignCenter)
 
     layout.addWidget(german_text_label)
+    layout.addSpacing(camera_capture_labels_spacing)
     layout.addWidget(english_text_label)
     return layout
 
@@ -190,9 +199,9 @@ def arrow_column_layout(visible_arrows) -> (QVBoxLayout, List[QLabel]):
         # arrow_label = QLabel("➞")
         arrow_label = QLabel("➔")
         arrows.append(arrow_label)
-        arrow_label.setFont(QFont(german_font, large_font_size))
+        arrow_label.setFont(QFont(english_font, large_font_size))
         if i in visible_arrows:
-            arrow_label.setStyleSheet(f"color: {german_colour}")
+            arrow_label.setStyleSheet(f"color: {arrow_and_box_colour}")
         else:
             arrow_label.setStyleSheet(f"color: {background_colour}")
         arrow_label.setAlignment(Qt.AlignCenter)
@@ -205,7 +214,7 @@ def arrow_column_layout(visible_arrows) -> (QVBoxLayout, List[QLabel]):
 def three_dots_label():
     label = QLabel("• • •")
     label.setFont(QFont(german_font, large_font_size))
-    label.setStyleSheet(f"color: {german_colour}")
+    label.setStyleSheet(f"color: {arrow_and_box_colour}")
     return label
 
 
@@ -220,7 +229,7 @@ def image_and_text_grid(
     grid_layout = QGridLayout(frame)
     grid_layout.setContentsMargins(*frame_margin_layer)
     frame.setFrameShape(QFrame.Box)
-    frame.setStyleSheet(f"color: {german_colour}")
+    frame.setStyleSheet(f"color: {arrow_and_box_colour}")
     frame.setLineWidth(frame_width)
 
     i = 0
@@ -253,9 +262,7 @@ def score_text_image_grid(
     english_labels,
     image_labels,
     font_size_score,
-    larger_font_size_score,
     font_size_label,
-    larger_font_size_label,
 ) -> QVBoxLayout:
     """
     Returns a QVBoxLayout with nr_prediction rows.

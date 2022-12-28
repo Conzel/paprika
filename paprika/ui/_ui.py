@@ -21,6 +21,8 @@ class UserInterface(QObject):
         super().__init__()
         self.app = QApplication(sys.argv)
 
+        add_myriad_pro_fonts()
+
         self.analysis_class = analysis_class
         self.camera = camera
 
@@ -210,9 +212,7 @@ class UserInterface(QObject):
             self.prediction_english_labels,
             self.prediction_image_labels,
             large_font_size,
-            huge_font_size,
             medium_font_size,
-            large_font_size,
         )
 
         layout.addLayout(saliency_layout, 0, 0, Qt.AlignCenter)
