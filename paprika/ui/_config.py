@@ -34,9 +34,9 @@ arrow_spacing = 160
 visible_arrows_from_camera = [2]
 visible_arrows_to_predictions = [4]
 visible_arrows_between_filters = range(nr_arrows)
-animation_milliseconds = (1000, 500, 1000)  # fade in, opaque, fade out
+animation_milliseconds = (500, 200, 500)  # fade in, opaque, fade out
 
-analysis_refresh_seconds = 3
+analysis_refresh_seconds = 1
 
 huge_font_size = 28
 large_font_size = 24
@@ -53,10 +53,10 @@ top_prediction_background_colour = "#e2e2e2"
 
 # screen number for each action
 # set each of them to 0, 1, 2 or 3 (multiple can have the same value)
-screen_nr_camera_feed = 1
-screen_nr_lower_filters = 0
-screen_nr_higher_filters = 3
-screen_nr_predictions = 2
+screen_nr_camera_feed = 0
+screen_nr_lower_filters = 3
+screen_nr_higher_filters = 2
+screen_nr_predictions = 1
 
 selected_layers = ["mixed3b", "mixed4c", "mixed4e", "mixed5a"]  # all layers to be shown
 
