@@ -1,3 +1,4 @@
+import time
 from typing import List, Tuple
 
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop, QObject
@@ -66,6 +67,7 @@ class AnalysisWorker(QObject):
 
     def obtain_new_analysis(self):
         camera_image = self.camera.read()
+        # start_time = time.time()
 
         results_dto = AnalysisResultsDTO(camera_image, selected_layers)
         # make image suitable for analysis
@@ -87,6 +89,8 @@ class AnalysisWorker(QObject):
         predictions = analysis.get_class_predictions(nr_predictions, nr_imagenet_images)
         results_dto.class_predictions = predictions
 
+        # end_time = time.time()
+        # print(end_time - start_time)
         self.new_analysis_signal.emit(results_dto)
 
     def start(self):
