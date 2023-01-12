@@ -272,25 +272,36 @@ def score_text_image_grid(
     v_layout = QVBoxLayout()
     for i_pred in range(nr_predictions):
         h_layout_frame = QFrame()
+        h_layout_frame.setFixedWidth(predictions_row_width)
         h_layout = QHBoxLayout(h_layout_frame)
         h_layout.addSpacing(predictions_edge_spacing)
         # add the prediction score to the row
-        h_layout.addWidget(score_labels[i_pred], stretch=predictions_stretch[0])
+        score_labels[i_pred].setFixedWidth(score_width)
+        h_layout.addWidget(score_labels[i_pred])
         # add the German and English labels to row
         label_v_layout = QVBoxLayout()
+        label_v_layout_widget = QWidget()
+        label_v_layout_widget.setLayout(label_v_layout)
+        label_v_layout_widget.setFixedWidth(label_width)
         label_v_layout.addSpacing(predictions_labels_spacing)
         label_v_layout.addWidget(german_labels[i_pred])
         label_v_layout.addWidget(english_labels[i_pred])
         label_v_layout.addSpacing(predictions_labels_spacing)
-        h_layout.addLayout(label_v_layout, stretch=predictions_stretch[1])
+        h_layout.addWidget(label_v_layout_widget)
         # add the images to the row
         image_h_layout = QHBoxLayout()
+        image_h_layout_widget = QWidget()
+        image_h_layout_widget.setLayout(image_h_layout)
+        image_h_layout_widget.setFixedWidth(images_width)
         for i_img in range(nr_imagenet_images):
             image_h_layout.addWidget(image_labels[i_pred][i_img])
             if i_img != nr_imagenet_images - 1:
                 image_h_layout.addStretch()
-        h_layout.addLayout(image_h_layout, stretch=predictions_stretch[2])
+        image_h_layout.setContentsMargins(0, predictions_bottom_top_margin, 0, predictions_bottom_top_margin)
+        image_h_layout.setSpacing(0)
+        h_layout.addWidget(image_h_layout_widget)
         h_layout.addSpacing(predictions_edge_spacing)
+        h_layout.setContentsMargins(0, 0, 0, 0)
         # add the row to the column
         v_layout.addWidget(h_layout_frame)
         if i_pred != nr_predictions - 1:
@@ -299,10 +310,6 @@ def score_text_image_grid(
         score_labels[i_pred].setFont(QFont(german_font, font_size_score))
         german_labels[i_pred].setFont(QFont(german_font, font_size_label))
         english_labels[i_pred].setFont(QFont(english_font, font_size_label))
-        # else: # set fonts with larger size for the first prediction
-        #     score_labels[i_pred].setFont(QFont(german_font, larger_font_size_score))
-        #     german_labels[i_pred].setFont(QFont(german_font, larger_font_size_label))
-        #     english_labels[i_pred].setFont(QFont(english_font, larger_font_size_label))
         score_labels[i_pred].setStyleSheet(f"color: {german_colour}")
         german_labels[i_pred].setStyleSheet(f"color: {german_colour}")
         english_labels[i_pred].setStyleSheet(f"color: {english_colour}")

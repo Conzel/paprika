@@ -234,7 +234,7 @@ class UserInterface(QObject):
         types_of_images contains "v" and "h" depending on the image being vertical/horizontal
         image_widths contains the image widths obtained after rescaling to similar_image_height height
         """
-        width_decrement_step = 10
+        width_decrement_step = 5
         while sum(image_widths) > similar_images_width_sum:
             for i in range(nr_imagenet_images):
                 # remove width from non-vertical image

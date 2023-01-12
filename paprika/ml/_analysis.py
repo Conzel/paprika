@@ -690,15 +690,19 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         subclass_group_dict = dict(
             sorted(
                 subclass_group_dict.items(),
-                key=lambda item: len(item[1].english_group),
+                key=lambda item: len(item[1].german_group),
                 reverse=True,
             )
         )
-        subclass_group_list = list(subclass_group_dict.items())[:10]
-        possible_activations = np.linspace(12.23, 137.88).tolist()
+        longest_subclass_group_list = list(subclass_group_dict.items())[:50]
+        shortest_subclass_group_list = list(subclass_group_dict.items())[-50:]
+        possible_activations = np.linspace(62.23, 137.88).tolist()
         activations = random.choices(possible_activations, k=n_predictions)
         for activation in activations:
-            subclass = random.choice(subclass_group_list)[1]
+            if random.randint(0, 10) % 3 != 0:
+                subclass = random.choice(longest_subclass_group_list)[1]
+            else:
+                subclass = random.choice(shortest_subclass_group_list)[1]
             images = self.get_random_images_from_folder(f"{imagenet_relative_path}{subclass.id}", n_images)
             class_predictions.append(ClassPrediction(subclass.german_group, subclass.english_group, activation, images))
 

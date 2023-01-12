@@ -8,7 +8,7 @@ camera_capture_spacing = 10  # spacing between the camera capture images and the
 camera_capture_labels_spacing = 8  # spacing between the texts underneath the camera captures
 filter_size = 390
 similar_image_height = 160
-similar_image_vertical_width = 110  # the width that a vertical image is cropped to
+similar_image_vertical_width = 120  # the width that a vertical image is cropped to
 similar_images_width_sum = 560  # the max width sum of the similar images in one line
 vertical_spacing_filters = 20
 frame_margin_layer = (
@@ -23,17 +23,21 @@ predictions_labels_spacing = (
     18  # increasing this decreases the space between the German and the English label
 )
 predictions_edge_spacing = (
-    4  # spacing on the left and right sides of one line of predictions with images
+    10  # spacing on the left and right sides of one line of predictions with images
 )
-predictions_bottom_spacing = 5  # spacing under the predictions
-predictions_stretch = (2, 5, 9)  # ratio of amounts of space for score, label and images
+predictions_bottom_top_margin = 10
+predictions_bottom_spacing = 3  # spacing under the predictions
 variable_images_width = True  # if the labels are shorter, more space is accorded to the images
+predictions_row_width = 1052  # width of the rows containing score, label and images
+score_width = 110
+label_width = 315
+images_width = 585
 
 # arrow configs
-nr_arrows = 8
-arrow_spacing = 160
-visible_arrows_from_camera = [2]
-visible_arrows_to_predictions = [4]
+nr_arrows = 10
+arrow_spacing = 135
+visible_arrows_from_camera = [3]
+visible_arrows_to_predictions = [5]
 visible_arrows_between_filters = range(nr_arrows)
 animation_milliseconds = (500, 300, 500)  # fade in, opaque, fade out
 
