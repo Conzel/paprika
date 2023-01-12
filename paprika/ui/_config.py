@@ -23,7 +23,7 @@ predictions_labels_spacing = (
     18  # increasing this decreases the space between the German and the English label
 )
 predictions_edge_spacing = (
-    10  # spacing on the left and right sides of one line of predictions with images
+    8  # spacing on the left and right sides of one line of predictions with images
 )
 predictions_bottom_top_margin = 10
 predictions_bottom_spacing = 3  # spacing under the predictions
@@ -39,9 +39,9 @@ arrow_spacing = 135
 visible_arrows_from_camera = [3]
 visible_arrows_to_predictions = [5]
 visible_arrows_between_filters = range(nr_arrows)
-animation_milliseconds = (500, 300, 500)  # fade in, opaque, fade out
+animation_milliseconds = (500, 500, 500)  # fade in, opaque, fade out
 
-analysis_refresh_seconds = 2.5
+analysis_refresh_seconds = 2
 
 large_font_size = 25
 medium_font_size = 23
