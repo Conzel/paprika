@@ -734,3 +734,104 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         #     images = self.get_random_images_from_folder(f"{folder_path}{class_id}", n_images)
         #     class_predictions.append(ClassPrediction(f"{german_label}|{english_label}", activation, images))
         return class_predictions
+
+
+class TestImagesAnalysis(NeuralNetworkAnalysis):
+    """
+    This class can be used to test that all images (both Imagenet and filter visualisations)
+    can be opened in Qt and the app does not crash when doing so.
+    It iterates through all Imagenet images and all filter visualisations,
+    and it returns all of them at some point.
+    Once all images have been iterated through, it defaults to returning the first image of the list.
+    """
+    
+    def get_all_images_from_folder(path) -> List[str]:
+        """
+        Returns a list containing the full paths of all images in the folder.
+        """
+        files = os.listdir(path)
+        files = [file for file in files if ".JPEG" in file]
+        files = [os.path.abspath(os.path.expanduser(os.path.expandvars(f"{path}/{file}"))) for file in files]
+        return files
+    
+    # construct a list containing all Imagenet images
+    subclass_ids = [subclass.id for subclass in construct_subclass_group_dict().values()]
+    all_imagenet_images = []
+    for subclass_id in subclass_ids:
+        all_imagenet_images.extend(get_all_images_from_folder(f"../imagenet/{subclass_id}"))
+    print(f"Number of Imagenet images: {len(all_imagenet_images)}")
+
+    # construct a list containing all filter visualisations
+    # the image paths are obtained similarly to how they are obtained in Inceptionv1Analysis
+    all_visualisation_images = []
+    device = torch.device("cuda")
+    model = inceptionv1(pretrained=True).eval().to(device)
+    layer_names = filter_strings_to_numbers.keys()
+    layer_activations = {}
+    for layer_name in layer_names:
+        layer_nr = filter_strings_to_numbers[layer_name]
+        layer = list(model.children())[layer_nr]
+        layer_activations[layer_name] = SaveFeatures(layer)
+    preprocess_image = T.Compose(
+        [
+            T.ToTensor(),
+            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ]
+    )
+    image = preprocess_image(np.random.random((224, 224, 3)).astype("float32")).unsqueeze(0).to(device)
+    predictions = model(image)[0]
+    folder_path = "../" + visualisations_relative_path
+    for layer_name in layer_names:
+        activations = layer_activations[layer_name]
+        filters = list(range(activations.features.shape[1]))
+        for filter in filters:
+            image_path = os.path.abspath(
+                os.path.expanduser(
+                    os.path.expandvars(f"{folder_path}{layer_name}/{filter}.jpg")
+                )
+            )
+            all_visualisation_images.append(image_path)
+    print(f"Number of visualisation images: {len(all_visualisation_images)}")
+
+    def __init__(self, img: np.ndarray):
+        self.image = img
+
+    def get_most_activated_filters(
+        self, layer_string: str, n: int
+    ) -> List[Tuple[str, int, float]]:
+        """
+        Returns the filter visualisations that have not been returned yet and deletes them from the list.
+        """
+        filters = []
+        for i in range(n):
+            if len(self.all_visualisation_images) == 1:
+                filters.append((self.all_visualisation_images[0], 0, 0))
+            else:
+                filters.append((self.all_visualisation_images.pop(), 0, 0))
+        return filters
+
+    def get_saliency_map(self) -> np.ndarray:
+        """
+        Returns the image itself.
+        """
+        return self.image
+
+    def get_class_predictions(
+        self, n_predictions: int, n_images: int
+    ) -> List[ClassPrediction]:
+        class_predictions = []
+        for i in range(n_predictions):
+            images = []
+            for j in range(n_images):
+                if len(self.all_imagenet_images) == 1:
+                    images.append(self.all_imagenet_images[0])
+                else:
+                    images.append(self.all_imagenet_images.pop())
+                if len(self.all_imagenet_images) % 10000 == 0:
+                    print()
+                    print()
+                    print(len(self.all_imagenet_images))
+                    print()
+                    print()
+            class_predictions.append(ClassPrediction("Geschirrspülmaschine", "Geschirrspülmaschine", 100.0, images))
+        return class_predictions
