@@ -68,7 +68,7 @@ screen_nr_lower_filters = 3
 screen_nr_higher_filters = 2
 screen_nr_predictions = 1
 
-selected_layers = ["mixed3b", "mixed4c", "mixed4e", "mixed5a"]  # all layers to be shown
+selected_layers = ["mixed4a", "mixed4b", "mixed4e", "mixed5a"]  # all layers to be shown
 
 layers_per_screen = 2  # number of layers shown in one screen
 filter_column_length = 4  # number of filters shown in one column
