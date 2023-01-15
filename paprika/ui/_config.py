@@ -33,7 +33,7 @@ images_width = 585
 
 # arrow configs
 nr_arrows = 10
-arrow_spacing = 135
+arrow_spacing = 143
 visible_arrows_from_camera = [3]
 visible_arrows_to_predictions = [5]
 visible_arrows_between_filters = range(nr_arrows)
