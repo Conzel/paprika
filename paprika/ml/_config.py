@@ -3,7 +3,7 @@ Contains constants for the ML analysis.
 """
 
 imagenet_relative_path = "../imagenet/"
-visualisations_relative_path = "visualisations/400/"
+visualisations_relative_path = "visualisations/390/"
 grouped_classes_relative_path = "grouped_classes.csv"
 filter_numbers_per_layer = {
     "mixed3a": 256,
