@@ -4,6 +4,7 @@ delete images that are too small to be passed through the model or with undesire
 
 """
 import os
+
 # import imagesize
 import json
 import torch
@@ -25,8 +26,6 @@ filter_strings_to_numbers = {
 }
 
 
-
-
 class SaveFeatures:
     def __init__(self, module):
         self.hook = module.register_forward_hook(self.hook_fn)
@@ -38,16 +37,10 @@ class SaveFeatures:
         self.hook.remove()
 
 
-
 if __name__ == "__main__":
 
-    #image transforms:
-    preprocess_image = T.Compose(
-        [
-            T.Resize(256),
-            T.CenterCrop(224),
-        ]
-    )
+    # image transforms:
+    preprocess_image = T.Compose([T.Resize(256), T.CenterCrop(224)])
     to_tensor = T.Compose(
         [
             T.ToTensor(),
@@ -55,12 +48,12 @@ if __name__ == "__main__":
         ]
     )
 
-    source_folder = '../imagenet/'
-    #choose layer
+    source_folder = "../imagenet/"
+    # choose layer
     layer_string = "mixed5b"
     layer_number = filter_strings_to_numbers[layer_string]
     # device = torch.device("cuda")
-    model = inceptionv1(pretrained=True).eval()  #.to(device)
+    model = inceptionv1(pretrained=True).eval()  # .to(device)
 
     all_classes = os.listdir(f"{source_folder}")
     counter = 0
@@ -73,7 +66,9 @@ if __name__ == "__main__":
             continue
 
         all_images = os.listdir(f"{source_folder}/{class_id}")
-        activation_all_images = np.zeros((len(all_images),1024)) # set second argument to length of layer activation
+        activation_all_images = np.zeros(
+            (len(all_images), 1024)
+        )  # set second argument to length of layer activation
         dictionary_imagenames = {}
 
         i = -1
@@ -83,23 +78,23 @@ if __name__ == "__main__":
             img = np.asarray(Image.open(image_path))
             shape = img.shape
             width, height = shape[0], shape[1]
-            min_side = min(width,height)
+            min_side = min(width, height)
             ratio = width / height
 
             # select images that are not too wide or too tall
-            '''if not(0.85 <= ratio <= 1.35) or min_side<224: ''' #checking for ratio excludes lots of images!
+            """if not(0.85 <= ratio <= 1.35) or min_side<224: """  # checking for ratio excludes lots of images!
 
-            if min_side<224: #necessary condition (otherwise error is thrown)
-                #os.remove(image_path)
-                #print('deleted')
-                #print(img.shape)
+            if min_side < 224:  # necessary condition (otherwise error is thrown)
+                # os.remove(image_path)
+                # print('deleted')
+                # print(img.shape)
                 continue
 
-            dictionary_imagenames[i]=str(image)
-            #load and preprocess image
+            dictionary_imagenames[i] = str(image)
+            # load and preprocess image
             pil_img = Image.fromarray(img.copy())
-            #skip black and white images
-            if len(pil_img.getbands())!= 3:
+            # skip black and white images
+            if len(pil_img.getbands()) != 3:
                 # os.remove(image_path)
                 # print('deleted')
                 # print(img.shape)
@@ -110,10 +105,9 @@ if __name__ == "__main__":
 
             im_cropped = preprocess_image(pil_img)
             image = Image.fromarray(img)
-            image = to_tensor(image).unsqueeze(0)  #.to(device)
+            image = to_tensor(image).unsqueeze(0)  # .to(device)
 
-
-            #compute layer activation
+            # compute layer activation
             layer = list(model.children())[layer_number]
             activations = SaveFeatures(layer)
             predictions = model(image)[0]
@@ -121,13 +115,18 @@ if __name__ == "__main__":
                 activations.features[0, i].mean()
                 for i in range(activations.features.shape[1])
             ]
-            activation_all_images[i]= torch.tensor(mean_act)/torch.sum(torch.tensor(mean_act)) #save normalizes feature vector
+            activation_all_images[i] = torch.tensor(mean_act) / torch.sum(
+                torch.tensor(mean_act)
+            )  # save normalizes feature vector
 
-        #save tensor
-        torch.save(torch.tensor(activation_all_images.T), f"{source_folder}{class_id}/{class_id}_activation_tensor.pt")
+        # save tensor
+        torch.save(
+            torch.tensor(activation_all_images.T),
+            f"{source_folder}{class_id}/{class_id}_activation_tensor.pt",
+        )
 
-        #save dict
-        json.dump(dictionary_imagenames, open(f"{source_folder}{class_id}/{class_id}_dictionary.json", 'w'))
-
-
-
+        # save dict
+        json.dump(
+            dictionary_imagenames,
+            open(f"{source_folder}{class_id}/{class_id}_dictionary.json", "w"),
+        )

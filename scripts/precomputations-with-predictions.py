@@ -2,6 +2,7 @@
 Precompute the predictions for each ImageNet image and save it as a tensor.
 """
 import os
+
 # import imagesize
 import json
 import torch
@@ -13,12 +14,7 @@ from PIL import Image
 if __name__ == "__main__":
 
     # image transforms:
-    preprocess_image = T.Compose(
-        [
-            T.Resize(224),
-            T.CenterCrop(224),
-        ]
-    )
+    preprocess_image = T.Compose([T.Resize(224), T.CenterCrop(224)])
     to_tensor = T.Compose(
         [
             T.ToTensor(),
@@ -26,7 +22,7 @@ if __name__ == "__main__":
         ]
     )
 
-    source_folder = '../imagenet/'
+    source_folder = "../imagenet/"
 
     device = torch.device("cuda")
     model = inceptionv1(pretrained=True).eval().to(device)
@@ -42,7 +38,9 @@ if __name__ == "__main__":
             continue
 
         all_images = os.listdir(f"{source_folder}/{class_id}")
-        activation_all_images = np.zeros((len(all_images), 1008))  # set second argument to length of layer activation
+        activation_all_images = np.zeros(
+            (len(all_images), 1008)
+        )  # set second argument to length of layer activation
         dictionary_imagenames = {}
 
         i = -1
@@ -79,7 +77,13 @@ if __name__ == "__main__":
             activation_all_images[i] = predictions.detach().cpu().numpy()
 
         # save tensor
-        torch.save(torch.tensor(activation_all_images.T), f"{source_folder}{class_id}/{class_id}_activation_tensor.pt")
+        torch.save(
+            torch.tensor(activation_all_images.T),
+            f"{source_folder}{class_id}/{class_id}_activation_tensor.pt",
+        )
 
         # save dict
-        json.dump(dictionary_imagenames, open(f"{source_folder}{class_id}/{class_id}_dictionary.json", 'w'))
+        json.dump(
+            dictionary_imagenames,
+            open(f"{source_folder}{class_id}/{class_id}_dictionary.json", "w"),
+        )

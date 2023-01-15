@@ -6,13 +6,15 @@ import os
 
 from paprika.ml._label_converter import construct_subclass_group_dict
 
+
 def count_images_in_folder(path):
     files = os.listdir(path)
     files = [file for file in files if ".JPEG" in file]
     return len(files)
 
+
 subclass_group_dict = construct_subclass_group_dict()
-assert(len(subclass_group_dict.values()) == 1000)
+assert len(subclass_group_dict.values()) == 1000
 
 incomplete_classes = []
 

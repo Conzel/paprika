@@ -10,6 +10,7 @@ start_group_index = 0
 nr_images_per_subclass = 3
 sleep_seconds = 1
 
+
 def get_random_images_from_folder(path, nr_images):
     files = os.listdir(path)
     imgs = []
@@ -20,13 +21,19 @@ def get_random_images_from_folder(path, nr_images):
     paths = []
     for img in imgs:
         relative_path = path + "/" + img
-        paths.append(os.path.abspath(os.path.expanduser(os.path.expandvars(relative_path))))
+        paths.append(
+            os.path.abspath(os.path.expanduser(os.path.expandvars(relative_path)))
+        )
     return paths
 
 
 translations_df = pandas.read_csv("grouped_classes.csv", delimiter="|")
-grouped_classes_df = translations_df.sort_values("english_group").groupby(["english_group", "german_group"]).agg(
-    list).reset_index()
+grouped_classes_df = (
+    translations_df.sort_values("english_group")
+    .groupby(["english_group", "german_group"])
+    .agg(list)
+    .reset_index()
+)
 
 for index, row in grouped_classes_df.iterrows():
     if index < start_group_index:
@@ -43,7 +50,9 @@ for index, row in grouped_classes_df.iterrows():
     print()
     for subgroup_index in range(nr_subgroups):
         print(f"{imagenet_id[subgroup_index]}   {english_labels[subgroup_index]}")
-        images = get_random_images_from_folder(f"../imagenet/{imagenet_id[subgroup_index]}", nr_images_per_subclass)
+        images = get_random_images_from_folder(
+            f"../imagenet/{imagenet_id[subgroup_index]}", nr_images_per_subclass
+        )
         figure, axes = plt.subplots(1, nr_images_per_subclass)
         for image_index in range(nr_images_per_subclass):
             axes[image_index].imshow(mpimg.imread(images[image_index]))
@@ -56,4 +65,3 @@ for index, row in grouped_classes_df.iterrows():
 
     print()
     input("press enter to go to next class\n")
-

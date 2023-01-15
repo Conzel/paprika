@@ -129,7 +129,9 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
 
     def get_device():
         if device_name == "cuda" and not torch.cuda.is_available():
-            print("WARNING: Cuda is not enable, but specified in config. Switching to CPU.")
+            print(
+                "WARNING: Cuda is not enable, but specified in config. Switching to CPU."
+            )
         if torch.cuda.is_available():
             return torch.device("cuda")
         else:
@@ -181,7 +183,7 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
         self.predictions = self.model(image)[0]
 
     def get_most_activated_filters(
-            self, layer_string: str, n: int
+        self, layer_string: str, n: int
     ) -> List[Tuple[str, int, float]]:
         """
         Returns a list of length n containing (image_path, filter_id, filter_activation)
@@ -210,8 +212,8 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
         for i in range(n):
             filter_id = most_activated_filters[i]
             filter_activation = (
-                                        mean_act[filter_id] / torch.sum(torch.tensor(mean_act))
-                                ).item() * 100
+                mean_act[filter_id] / torch.sum(torch.tensor(mean_act))
+            ).item() * 100
             image_path = os.path.abspath(
                 os.path.expanduser(
                     os.path.expandvars(f"{folder_path}{layer_string}/{filter_id}.jpg")
@@ -237,8 +239,12 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
         )
         grayscale_cam = grayscale_cam[0, :]
         rgb_image = self.original_image / 255.0
-        grayscale_cam_resized = resize(grayscale_cam, (rgb_image.shape[1], rgb_image.shape[1]), anti_aliasing=True)
-        visualization = show_cam_on_image(rgb_image, grayscale_cam_resized, use_rgb=True)
+        grayscale_cam_resized = resize(
+            grayscale_cam, (rgb_image.shape[1], rgb_image.shape[1]), anti_aliasing=True
+        )
+        visualization = show_cam_on_image(
+            rgb_image, grayscale_cam_resized, use_rgb=True
+        )
         return visualization
 
     def get_similar_images(self, path, class_id, nr_images) -> List[str]:
@@ -249,9 +255,11 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
         enough_images_in_class = True
 
         if nr_images != 0:
-            tensor = torch.load(
-                f"{path}{class_id}/{class_id}_activation_tensor.pt"
-            ).float().to(self.device)
+            tensor = (
+                torch.load(f"{path}{class_id}/{class_id}_activation_tensor.pt")
+                .float()
+                .to(self.device)
+            )
             dictionary = json.load(open(f"{path}{class_id}/{class_id}_dictionary.json"))
 
             if len(dictionary) < nr_images:
@@ -275,7 +283,7 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
         return image_full_paths
 
     def get_class_predictions(
-            self, n_predictions: int, n_images: int
+        self, n_predictions: int, n_images: int
     ) -> List[ClassPrediction]:
         """
         Returns a list of the n_predictions most likely classes for the image.
@@ -291,10 +299,10 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
             prediction = self.predictions[subclass_position].item()
             subclass = self.subclass_group_dict[subclass_position]
             if (
-                    prediction
-                    > group_score_dict[
-                (subclass.german_group, subclass.english_group)
-            ].max_score
+                prediction
+                > group_score_dict[
+                    (subclass.german_group, subclass.english_group)
+                ].max_score
             ):
                 group_score_dict[
                     (subclass.german_group, subclass.english_group)
@@ -333,7 +341,10 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
                 german_label=group_id.german_group,
                 english_label=group_id.english_group,
                 score=group_score.max_score,
-                similar_images=self.get_similar_images(imagenet_relative_path, group_score.id, n_images))
+                similar_images=self.get_similar_images(
+                    imagenet_relative_path, group_score.id, n_images
+                ),
+            )
             final_predictions.append(class_prediction)
 
         return final_predictions
@@ -343,21 +354,23 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
     """
     Performs image analysis using Inceptionv1.
     """
+
     def get_device():
         if device_name == "cuda" and not torch.cuda.is_available():
-            print("WARNING: Cuda is not enable, but specified in config. Switching to CPU.")
+            print(
+                "WARNING: Cuda is not enable, but specified in config. Switching to CPU."
+            )
         if torch.cuda.is_available():
             return torch.device("cuda")
         else:
             return torch.device("cpu")
+
     # use this same dictionary for every image analysis
     subclass_group_dict = construct_subclass_group_dict()
     # create a copy of this dictionary for every image analysis
     group_score_dict = construct_group_score_dict(subclass_group_dict)
     device = get_device()
     model = inceptionv1(pretrained=True).eval().to(device)
-
-
 
     def __init__(self, img: np.ndarray):
         """Performs the analysis on the given image."""
@@ -434,7 +447,9 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
 
         # Construct the CAM object once, and then re-use it on many images:
         cam = GradCAMPlusPlus(
-            model=self.model, target_layers=target_layers, use_cuda=torch.cuda.is_available()
+            model=self.model,
+            target_layers=target_layers,
+            use_cuda=torch.cuda.is_available(),
         )
         targets = None  # [ClassifierOutputTarget(1000)]
         # You can also pass aug_smooth=True and eigen_smooth=True, to apply smoothing.
@@ -465,9 +480,11 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
         enough_images_in_class = True
 
         if nr_images != 0:
-            tensor = torch.load(
-                f"{path}{class_id}/{class_id}_activation_tensor.pt"
-            ).float().to(self.device)
+            tensor = (
+                torch.load(f"{path}{class_id}/{class_id}_activation_tensor.pt")
+                .float()
+                .to(self.device)
+            )
             dictionary = json.load(open(f"{path}{class_id}/{class_id}_dictionary.json"))
 
             if len(dictionary) < nr_images:
@@ -565,7 +582,9 @@ class Inceptionv1Analysis(NeuralNetworkAnalysis):
                 german_label=group_id.german_group,
                 english_label=group_id.english_group,
                 score=group_score.max_score,
-                similar_images=self.get_similar_images(imagenet_relative_path, group_score.id, n_images, predictions),
+                similar_images=self.get_similar_images(
+                    imagenet_relative_path, group_score.id, n_images, predictions
+                ),
                 # similar_images=self.get_similar_images(imagenet_relative_path, group_score.id, n_images, mean_act),
             )
             final_predictions.append(class_prediction)
@@ -703,8 +722,14 @@ class DummyAnalysis(NeuralNetworkAnalysis):
                 subclass = random.choice(longest_subclass_group_list)[1]
             else:
                 subclass = random.choice(shortest_subclass_group_list)[1]
-            images = self.get_random_images_from_folder(f"{imagenet_relative_path}{subclass.id}", n_images)
-            class_predictions.append(ClassPrediction(subclass.german_group, subclass.english_group, activation, images))
+            images = self.get_random_images_from_folder(
+                f"{imagenet_relative_path}{subclass.id}", n_images
+            )
+            class_predictions.append(
+                ClassPrediction(
+                    subclass.german_group, subclass.english_group, activation, images
+                )
+            )
 
         # random labels
         # class_predictions = []
@@ -735,6 +760,7 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         #     class_predictions.append(ClassPrediction(f"{german_label}|{english_label}", activation, images))
         return class_predictions
 
+
 class TestImagesAnalysis(NeuralNetworkAnalysis):
     """
     This class can be used to test that all images (both Imagenet and filter visualisations)
@@ -750,9 +776,12 @@ class TestImagesAnalysis(NeuralNetworkAnalysis):
         """
         files = os.listdir(path)
         files = [file for file in files if ".JPEG" in file]
-        files = [os.path.abspath(os.path.expanduser(os.path.expandvars(f"{path}/{file}"))) for file in files]
+        files = [
+            os.path.abspath(os.path.expanduser(os.path.expandvars(f"{path}/{file}")))
+            for file in files
+        ]
         return files
-    
+
     # construct a list containing all Imagenet images
     # version 1: add all image paths from the Imagenet folders
     # subclass_ids = [subclass.id for subclass in construct_subclass_group_dict().values()]
@@ -773,16 +802,30 @@ class TestImagesAnalysis(NeuralNetworkAnalysis):
             T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
-    image = preprocess_image(np.random.random((224, 224, 3)).astype("float32")).unsqueeze(0).to(device)
+    image = (
+        preprocess_image(np.random.random((224, 224, 3)).astype("float32"))
+        .unsqueeze(0)
+        .to(device)
+    )
     predictions = model(image)[0]
 
     for class_id in class_ids:
-        tensor = torch.load(f"{imagenet_relative_path}{class_id}/{class_id}_activation_tensor.pt").float().to(device)
-        dictionary = json.load(open(f"{imagenet_relative_path}{class_id}/{class_id}_dictionary.json"))
+        tensor = (
+            torch.load(
+                f"{imagenet_relative_path}{class_id}/{class_id}_activation_tensor.pt"
+            )
+            .float()
+            .to(device)
+        )
+        dictionary = json.load(
+            open(f"{imagenet_relative_path}{class_id}/{class_id}_dictionary.json")
+        )
         dot_product = predictions[np.newaxis] @ tensor
         for idx in range(dot_product.shape[1]):
             image_name = dictionary[str(idx)]
-            all_imagenet_images.append(imagenet_relative_path + str(class_id) + "/" + image_name)
+            all_imagenet_images.append(
+                imagenet_relative_path + str(class_id) + "/" + image_name
+            )
     print(f"Number of Imagenet images: {len(all_imagenet_images)}")
 
     # construct a list containing all filter visualisations
@@ -849,5 +892,9 @@ class TestImagesAnalysis(NeuralNetworkAnalysis):
                     print(len(self.all_imagenet_images))
                     print()
                     print()
-            class_predictions.append(ClassPrediction("Geschirrspülmaschine", "Geschirrspülmaschine", 100.0, images))
+            class_predictions.append(
+                ClassPrediction(
+                    "Geschirrspülmaschine", "Geschirrspülmaschine", 100.0, images
+                )
+            )
         return class_predictions

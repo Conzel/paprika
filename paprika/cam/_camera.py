@@ -78,7 +78,7 @@ class CroppingVideoCapture(Camera):
     A cropping of the captured image is returned.
     """
 
-    def __init__(self, name: Union[str, int], margin_to_crop_size = 100):
+    def __init__(self, name: Union[str, int], margin_to_crop_size=100):
         self.cap = cv2.VideoCapture(name)
         self.margin_size = margin_to_crop_size
         if not self.cap.isOpened():
@@ -102,7 +102,9 @@ class CroppingVideoCapture(Camera):
 
     def read(self) -> np.ndarray:
         image = self.q.get()
-        return image[self.margin_size: -self.margin_size, self.margin_size: -self.margin_size]
+        return image[
+            self.margin_size : -self.margin_size, self.margin_size : -self.margin_size
+        ]
 
 
 class DummyCamera(Camera):

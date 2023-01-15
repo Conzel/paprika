@@ -1,7 +1,12 @@
 import os
 
 from paprika.cam import BufferlessVideoCapture, DummyCamera, CroppingVideoCapture
-from paprika.ml._analysis import DummyAnalysis, Inceptionv1Analysis, Inceptionv1FasterAnalysis, TestImagesAnalysis
+from paprika.ml._analysis import (
+    DummyAnalysis,
+    Inceptionv1Analysis,
+    Inceptionv1FasterAnalysis,
+    TestImagesAnalysis,
+)
 from paprika.ui._ui import UserInterface
 
 

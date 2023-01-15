@@ -10,10 +10,7 @@ model = torch.hub.load("pytorch/vision:v0.10.0", "googlenet", pretrained=True).e
 
 
 preprocess_image = transforms.Compose(
-    [
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-    ]
+    [transforms.Resize(256), transforms.CenterCrop(224)]
 )
 
 preprocess_tensor = transforms.Compose(

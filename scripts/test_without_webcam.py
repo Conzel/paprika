@@ -11,10 +11,7 @@ model = inceptionv1(pretrained=True).eval()
 
 
 preprocess_image = transforms.Compose(
-    [
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-    ]
+    [transforms.Resize(256), transforms.CenterCrop(224)]
 )
 
 preprocess_tensor = transforms.Compose(
@@ -26,23 +23,22 @@ preprocess_tensor = transforms.Compose(
 
 
 # test image
-img = np.asarray(Image.open('test_images/remote_control.jpg'))
+img = np.asarray(Image.open("test_images/remote_control.jpg"))
 pil_img = Image.fromarray(img.copy())
 im_cropped = preprocess_image(pil_img)
-#im_tensor = preprocess_tensor(im_cropped).unsqueeze(0)
+# im_tensor = preprocess_tensor(im_cropped).unsqueeze(0)
 
-print('label',(Inceptionv1Analysis(img).get_class_predictions(3,1))[0].label)
+print("label", (Inceptionv1Analysis(img).get_class_predictions(3, 1))[0].label)
 
-print('score', (Inceptionv1Analysis(img).get_class_predictions(3,1))[0].score)
-print('filters',Inceptionv1Analysis(img).get_most_activated_filters('mixed4e',4))
+print("score", (Inceptionv1Analysis(img).get_class_predictions(3, 1))[0].score)
+print("filters", Inceptionv1Analysis(img).get_most_activated_filters("mixed4e", 4))
 map = Inceptionv1Analysis(img).get_saliency_map()
 plt.imshow(map)
 plt.savefig("test_images/testNew.jpg")
 while True:
-    cv2.imshow("map",map)
+    cv2.imshow("map", map)
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 # Display the resulting frame
 cv2.imshow("frame", np.asarray(im_cropped))
-

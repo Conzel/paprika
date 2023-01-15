@@ -1,7 +1,12 @@
 import random
 import sys
 
-from PyQt5.QtCore import QObject, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup
+from PyQt5.QtCore import (
+    QObject,
+    QPropertyAnimation,
+    QParallelAnimationGroup,
+    QSequentialAnimationGroup,
+)
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QApplication, QGridLayout, QShortcut, QGraphicsOpacityEffect
 
@@ -145,21 +150,11 @@ class UserInterface(QObject):
                 visible_arrows = visible_arrows_between_filters
             arrow_layout, arrow_labels = arrow_column_layout(visible_arrows)
             self.arrow_labels.extend(arrow_labels)
-            layout.addLayout(
-                arrow_layout,
-                0,
-                layout.columnCount(),
-                Qt.AlignCenter,
-            )
+            layout.addLayout(arrow_layout, 0, layout.columnCount(), Qt.AlignCenter)
             layout.addWidget(frame, 0, layout.columnCount(), Qt.AlignCenter)
         arrow_layout, arrow_labels = arrow_column_layout(visible_arrows_between_filters)
         self.arrow_labels.extend(arrow_labels)
-        layout.addLayout(
-            arrow_layout,
-            0,
-            layout.columnCount(),
-            Qt.AlignCenter,
-        )
+        layout.addLayout(arrow_layout, 0, layout.columnCount(), Qt.AlignCenter)
 
     def init_screen_higher_filters(self):
         # add the filter visualisations to a layout
@@ -175,23 +170,15 @@ class UserInterface(QObject):
                 small_font_size,
                 frame,
             )
-            arrow_layout, arrow_labels = arrow_column_layout(visible_arrows_between_filters)
-            self.arrow_labels.extend(arrow_labels)
-            layout.addLayout(
-                arrow_layout,
-                0,
-                layout.columnCount(),
-                Qt.AlignCenter,
+            arrow_layout, arrow_labels = arrow_column_layout(
+                visible_arrows_between_filters
             )
+            self.arrow_labels.extend(arrow_labels)
+            layout.addLayout(arrow_layout, 0, layout.columnCount(), Qt.AlignCenter)
             layout.addWidget(frame, 0, layout.columnCount(), Qt.AlignCenter)
         arrow_layout, arrow_labels = arrow_column_layout(visible_arrows_to_predictions)
         self.arrow_labels.extend(arrow_labels)
-        layout.addLayout(
-            arrow_layout,
-            0,
-            layout.columnCount(),
-            Qt.AlignCenter,
-        )
+        layout.addLayout(arrow_layout, 0, layout.columnCount(), Qt.AlignCenter)
 
     def init_screen_predictions(self):
         # add the saliency map and predictions to a layout
@@ -227,7 +214,9 @@ class UserInterface(QObject):
         pixmap = resized_pixmap_by_height(pixmap, camera_capture_size)
         self.running_camera_label.setPixmap(pixmap)
 
-    def get_new_image_widths(self, types_of_images: List[str], image_widths: List[int]) -> List[int]:
+    def get_new_image_widths(
+        self, types_of_images: List[str], image_widths: List[int]
+    ) -> List[int]:
         """
         Returns a list of the width that the images need to be cropped to.
         The new image widths sum up to at most similar_images_width_sum.
@@ -240,7 +229,10 @@ class UserInterface(QObject):
                 # remove width from non-vertical image
                 if types_of_images[i] != "v":
                     # do not remove width if the image is already too narrow
-                    if image_widths[i] - width_decrement_step > similar_image_vertical_width:
+                    if (
+                        image_widths[i] - width_decrement_step
+                        > similar_image_vertical_width
+                    ):
                         image_widths[i] -= width_decrement_step
         return image_widths
 
@@ -287,7 +279,9 @@ class UserInterface(QObject):
             image_widths = []
             for j in range(nr_imagenet_images):
                 imagenet_image = prediction.similar_images[j]
-                pixmap = resized_pixmap_by_height(QPixmap(imagenet_image), similar_image_height)
+                pixmap = resized_pixmap_by_height(
+                    QPixmap(imagenet_image), similar_image_height
+                )
                 width = pixmap.width()
                 # vertical image that needs its top and bottom margins cropped
                 if width < similar_image_vertical_width:
@@ -298,19 +292,19 @@ class UserInterface(QObject):
                     types_of_images.append("h")
                     image_widths.append(width)
             new_image_widths = self.get_new_image_widths(types_of_images, image_widths)
-            
+
             for j in range(nr_imagenet_images):
                 imagenet_image = prediction.similar_images[j]
                 pixmap = QPixmap(imagenet_image)
                 if types_of_images[j] == "v":
-                    pixmap = resized_pixmap_by_width(pixmap, similar_image_vertical_width)
+                    pixmap = resized_pixmap_by_width(
+                        pixmap, similar_image_vertical_width
+                    )
                     pixmap = cropped_vertical_pixmap(pixmap, similar_image_height)
                 else:
                     pixmap = resized_pixmap_by_height(pixmap, similar_image_height)
                     pixmap = cropped_horizontal_pixmap(pixmap, new_image_widths[j])
-                self.prediction_image_labels[i][j].setPixmap(
-                    pixmap
-                )
+                self.prediction_image_labels[i][j].setPixmap(pixmap)
 
         self.arrows_animation.start()
 

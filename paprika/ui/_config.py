@@ -4,8 +4,12 @@ Contains constants for the UI.
 
 # image and spacing sizes
 camera_capture_size = 750
-camera_capture_spacing = 10  # spacing between the camera capture images and the texts underneath
-camera_capture_labels_spacing = 8  # spacing between the texts underneath the camera captures
+camera_capture_spacing = (
+    10
+)  # spacing between the camera capture images and the texts underneath
+camera_capture_labels_spacing = (
+    8
+)  # spacing between the texts underneath the camera captures
 filter_size = 390
 similar_image_height = 160
 similar_image_vertical_width = 120  # the width that a vertical image is cropped to
@@ -22,10 +26,15 @@ horizontal_spacing_filters = 15
 predictions_labels_spacing = (
     18  # increasing this decreases the space between the German and the English label
 )
-predictions_edge_spacing = [6, 4]  # spacing on the left and right sides of one line of predictions with images
+predictions_edge_spacing = [
+    6,
+    4,
+]  # spacing on the left and right sides of one line of predictions with images
 predictions_bottom_top_margin = 10
 predictions_bottom_spacing = 3  # spacing under the predictions
-variable_images_width = True  # if the labels are shorter, more space is accorded to the images
+variable_images_width = (
+    True
+)  # if the labels are shorter, more space is accorded to the images
 predictions_row_width = 1056  # width of the rows containing score, label and images
 score_width = 110
 label_width = 315

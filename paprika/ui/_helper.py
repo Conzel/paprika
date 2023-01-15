@@ -5,7 +5,13 @@ from typing import List
 from PIL import Image
 from skimage.transform import resize
 import numpy as np
-from PyQt5.QtCore import QRect, Qt, QPropertyAnimation, QParallelAnimationGroup, QSequentialAnimationGroup
+from PyQt5.QtCore import (
+    QRect,
+    Qt,
+    QPropertyAnimation,
+    QParallelAnimationGroup,
+    QSequentialAnimationGroup,
+)
 from PyQt5.QtGui import QGuiApplication, QPixmap, QImage, QFont, QFontDatabase
 from PyQt5.QtWidgets import (
     QWidget,
@@ -13,10 +19,12 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QGridLayout,
-    QFrame, QGraphicsOpacityEffect,
+    QFrame,
+    QGraphicsOpacityEffect,
 )
 
 from paprika.ui._config import *
+
 
 def add_myriad_pro_fonts():
     """
@@ -130,11 +138,13 @@ def resized_pixmap_by_height(pixmap: QPixmap, height: int) -> QPixmap:
     """
     return pixmap.scaledToHeight(height)
 
+
 def resized_pixmap_by_width(pixmap: QPixmap, width: int) -> QPixmap:
     """
     Returns the pixmap rescaled to given width.
     """
     return pixmap.scaledToWidth(width)
+
 
 def cropped_vertical_pixmap(pixmap: QPixmap, new_height: int) -> QPixmap:
     """
@@ -145,6 +155,7 @@ def cropped_vertical_pixmap(pixmap: QPixmap, new_height: int) -> QPixmap:
     rect = QRect(0, top, pixmap.width(), new_height)
     return pixmap.copy(rect)
 
+
 def cropped_horizontal_pixmap(pixmap: QPixmap, new_width: int) -> QPixmap:
     """
     Returns the cropped pixmap with the new width.
@@ -153,6 +164,7 @@ def cropped_horizontal_pixmap(pixmap: QPixmap, new_width: int) -> QPixmap:
     left = (pixmap.width() - new_width) // 2
     rect = QRect(left, 0, new_width, pixmap.height())
     return pixmap.copy(rect)
+
 
 def image_with_explanation(
     image_label: QLabel,
@@ -297,7 +309,9 @@ def score_text_image_grid(
             image_h_layout.addWidget(image_labels[i_pred][i_img])
             if i_img != nr_imagenet_images - 1:
                 image_h_layout.addStretch()
-        image_h_layout.setContentsMargins(0, predictions_bottom_top_margin, 0, predictions_bottom_top_margin)
+        image_h_layout.setContentsMargins(
+            0, predictions_bottom_top_margin, 0, predictions_bottom_top_margin
+        )
         image_h_layout.setSpacing(0)
         h_layout.addWidget(image_h_layout_widget)
         h_layout.addSpacing(predictions_edge_spacing[1])
@@ -314,7 +328,9 @@ def score_text_image_grid(
         german_labels[i_pred].setStyleSheet(f"color: {german_colour}")
         english_labels[i_pred].setStyleSheet(f"color: {english_colour}")
         if i_pred == 0:
-            h_layout_frame.setStyleSheet(f"background-color: {top_prediction_background_colour}")
+            h_layout_frame.setStyleSheet(
+                f"background-color: {top_prediction_background_colour}"
+            )
     return v_layout
 
 
