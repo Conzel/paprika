@@ -22,13 +22,11 @@ horizontal_spacing_filters = 15
 predictions_labels_spacing = (
     18  # increasing this decreases the space between the German and the English label
 )
-predictions_edge_spacing = (
-    8  # spacing on the left and right sides of one line of predictions with images
-)
+predictions_edge_spacing = [6, 4]  # spacing on the left and right sides of one line of predictions with images
 predictions_bottom_top_margin = 10
 predictions_bottom_spacing = 3  # spacing under the predictions
 variable_images_width = True  # if the labels are shorter, more space is accorded to the images
-predictions_row_width = 1052  # width of the rows containing score, label and images
+predictions_row_width = 1056  # width of the rows containing score, label and images
 score_width = 110
 label_width = 315
 images_width = 585

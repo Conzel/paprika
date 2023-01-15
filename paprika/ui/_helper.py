@@ -274,7 +274,7 @@ def score_text_image_grid(
         h_layout_frame = QFrame()
         h_layout_frame.setFixedWidth(predictions_row_width)
         h_layout = QHBoxLayout(h_layout_frame)
-        h_layout.addSpacing(predictions_edge_spacing)
+        h_layout.addSpacing(predictions_edge_spacing[0])
         # add the prediction score to the row
         score_labels[i_pred].setFixedWidth(score_width)
         h_layout.addWidget(score_labels[i_pred])
@@ -300,7 +300,7 @@ def score_text_image_grid(
         image_h_layout.setContentsMargins(0, predictions_bottom_top_margin, 0, predictions_bottom_top_margin)
         image_h_layout.setSpacing(0)
         h_layout.addWidget(image_h_layout_widget)
-        h_layout.addSpacing(predictions_edge_spacing)
+        h_layout.addSpacing(predictions_edge_spacing[1])
         h_layout.setContentsMargins(0, 0, 0, 0)
         # add the row to the column
         v_layout.addWidget(h_layout_frame)
