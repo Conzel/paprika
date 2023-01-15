@@ -1,5 +1,6 @@
 from ._analysis import NeuralNetworkAnalysis, ClassPrediction
 
+
 class Inceptionv1Analysis(NeuralNetworkAnalysis):
     """
     Performs image analysis using Inceptionv1.
