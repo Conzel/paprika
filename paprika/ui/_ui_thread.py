@@ -4,7 +4,7 @@ from typing import List, Tuple
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, QEventLoop, QObject
 import numpy as np
 
-from paprika.ml import NeuralNetworkAnalysis, DummyAnalysis
+from paprika.ml import NeuralNetworkAnalysis
 from paprika.ui._config import *
 from paprika.ui._helper import middle_cropped_image, bgr_to_rgb, image_for_analysis
 

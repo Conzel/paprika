@@ -11,7 +11,6 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QApplication, QGridLayout, QShortcut, QGraphicsOpacityEffect
 
 from paprika.cam import Camera
-from paprika.ml import DummyAnalysis, Inceptionv1Analysis
 from paprika.ui._ui_thread import *
 from paprika.ui._config import *
 from paprika.ui._helper import *
