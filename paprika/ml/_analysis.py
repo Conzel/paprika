@@ -735,7 +735,6 @@ class DummyAnalysis(NeuralNetworkAnalysis):
         #     class_predictions.append(ClassPrediction(f"{german_label}|{english_label}", activation, images))
         return class_predictions
 
-
 class TestImagesAnalysis(NeuralNetworkAnalysis):
     """
     This class can be used to test that all images (both Imagenet and filter visualisations)
@@ -744,7 +743,7 @@ class TestImagesAnalysis(NeuralNetworkAnalysis):
     and it returns all of them at some point.
     Once all images have been iterated through, it defaults to returning the first image of the list.
     """
-    
+
     def get_all_images_from_folder(path) -> List[str]:
         """
         Returns a list containing the full paths of all images in the folder.
@@ -755,23 +754,19 @@ class TestImagesAnalysis(NeuralNetworkAnalysis):
         return files
     
     # construct a list containing all Imagenet images
-    subclass_ids = [subclass.id for subclass in construct_subclass_group_dict().values()]
-    all_imagenet_images = []
-    for subclass_id in subclass_ids:
-        all_imagenet_images.extend(get_all_images_from_folder(f"../imagenet/{subclass_id}"))
-    print(f"Number of Imagenet images: {len(all_imagenet_images)}")
+    # version 1: add all image paths from the Imagenet folders
+    # subclass_ids = [subclass.id for subclass in construct_subclass_group_dict().values()]
+    # all_imagenet_images = []
+    # for subclass_id in subclass_ids:
+    #     all_imagenet_images.extend(get_all_images_from_folder(f"../imagenet/{subclass_id}"))
+    # print(f"Number of Imagenet images: {len(all_imagenet_images)}")
 
-    # construct a list containing all filter visualisations
-    # the image paths are obtained similarly to how they are obtained in Inceptionv1Analysis
-    all_visualisation_images = []
+    # version 2: similarly to how the paths are obtained in Inceptionv1Analysis
+    all_imagenet_images = []
+    subclass_group_dict = construct_subclass_group_dict()
+    class_ids = [subclass.id for subclass in subclass_group_dict.values()]
     device = torch.device("cuda")
     model = inceptionv1(pretrained=True).eval().to(device)
-    layer_names = filter_strings_to_numbers.keys()
-    layer_activations = {}
-    for layer_name in layer_names:
-        layer_nr = filter_strings_to_numbers[layer_name]
-        layer = list(model.children())[layer_nr]
-        layer_activations[layer_name] = SaveFeatures(layer)
     preprocess_image = T.Compose(
         [
             T.ToTensor(),
@@ -779,6 +774,27 @@ class TestImagesAnalysis(NeuralNetworkAnalysis):
         ]
     )
     image = preprocess_image(np.random.random((224, 224, 3)).astype("float32")).unsqueeze(0).to(device)
+    predictions = model(image)[0]
+
+    for class_id in class_ids:
+        tensor = torch.load(f"{imagenet_relative_path}{class_id}/{class_id}_activation_tensor.pt").float().to(device)
+        dictionary = json.load(open(f"{imagenet_relative_path}{class_id}/{class_id}_dictionary.json"))
+        dot_product = predictions[np.newaxis] @ tensor
+        for idx in range(dot_product.shape[1]):
+            image_name = dictionary[str(idx)]
+            all_imagenet_images.append(imagenet_relative_path + str(class_id) + "/" + image_name)
+    print(f"Number of Imagenet images: {len(all_imagenet_images)}")
+
+    # construct a list containing all filter visualisations
+    # the image paths are obtained similarly to how they are obtained in Inceptionv1Analysis
+    all_visualisation_images = []
+    model = inceptionv1(pretrained=True).eval().to(device)
+    layer_names = filter_strings_to_numbers.keys()
+    layer_activations = {}
+    for layer_name in layer_names:
+        layer_nr = filter_strings_to_numbers[layer_name]
+        layer = list(model.children())[layer_nr]
+        layer_activations[layer_name] = SaveFeatures(layer)
     predictions = model(image)[0]
     folder_path = "../" + visualisations_relative_path
     for layer_name in layer_names:

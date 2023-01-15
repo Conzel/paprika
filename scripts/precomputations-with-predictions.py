@@ -38,7 +38,7 @@ if __name__ == "__main__":
         print(class_id)
         counter += 1
 
-        if counter <= 30:
+        if counter <= -1:
             continue
 
         all_images = os.listdir(f"{source_folder}/{class_id}")
@@ -54,13 +54,14 @@ if __name__ == "__main__":
             width, height = shape[0], shape[1]
             min_side = min(width, height)
 
+            dictionary_imagenames[i] = str(image)
+
             if min_side < 224:  # necessary condition (otherwise error is thrown)
                 # os.remove(image_path)
                 # print('deleted')
                 # print(img.shape)
                 continue
 
-            dictionary_imagenames[i] = str(image)
             # load and preprocess image
             pil_img = Image.fromarray(img.copy())
             # skip black and white images
