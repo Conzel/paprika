@@ -172,7 +172,10 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
         self.image = Image.fromarray(img)
 
         # get the layer activations for each selected layer
-        layers = selected_layers
+        layers = selected_layers.copy()
+        self.layer_for_feature_vector = "mixed5b"
+        if self.layer_for_feature_vector not in layers:
+            layers.append(self.layer_for_feature_vector)
         self.layer_activations = {}
         for layer_name in layers:
             layer_number = filter_strings_to_numbers[layer_name]
@@ -254,6 +257,14 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
         image_full_paths = []
         enough_images_in_class = True
 
+        activations = self.layer_activations[self.layer_for_feature_vector]
+        mean_act = [
+            activations.features[0, i].mean()
+            for i in range(activations.features.shape[1])
+        ]
+        act_sum = torch.sum(torch.tensor(mean_act))
+        mean_act = (torch.tensor(mean_act) / act_sum).to(self.device)
+
         if nr_images != 0:
             tensor = (
                 torch.load(f"{path}{class_id}/{class_id}_activation_tensor.pt")
@@ -267,7 +278,7 @@ class Inceptionv1FasterAnalysis(NeuralNetworkAnalysis):
                     f"class {class_id} does not contain enough images"
                 )  # shouldn't happen, when whole image net is used
                 enough_images_in_class = False
-            dot_product = self.predictions[np.newaxis] @ tensor
+            dot_product = mean_act[np.newaxis] @ tensor
             indices = torch.topk(dot_product, nr_images).indices.cpu().detach().numpy()
 
             image_full_paths = []
