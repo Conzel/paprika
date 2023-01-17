@@ -52,8 +52,8 @@ if __name__ == "__main__":
     # choose layer
     layer_string = "mixed5b"
     layer_number = filter_strings_to_numbers[layer_string]
-    # device = torch.device("cuda")
-    model = inceptionv1(pretrained=True).eval()  # .to(device)
+    device = torch.device("cuda")
+    model = inceptionv1(pretrained=True).eval().to(device)
 
     all_classes = os.listdir(f"{source_folder}")
     counter = 0
@@ -62,10 +62,12 @@ if __name__ == "__main__":
         print(class_id)
         counter += 1
 
-        if counter <= -1:
+        all_images = os.listdir(f"{source_folder}/{class_id}")
+
+        # continue to next class if precomputations already done for this class
+        if f"{class_id}_activation_tensor.pt" in all_images and f"{class_id}_dictionary.json" in all_images:
             continue
 
-        all_images = os.listdir(f"{source_folder}/{class_id}")
         activation_all_images = np.zeros(
             (len(all_images), 1024)
         )  # set second argument to length of layer activation
@@ -79,10 +81,8 @@ if __name__ == "__main__":
             shape = img.shape
             width, height = shape[0], shape[1]
             min_side = min(width, height)
-            ratio = width / height
 
-            # select images that are not too wide or too tall
-            """if not(0.85 <= ratio <= 1.35) or min_side<224: """  # checking for ratio excludes lots of images!
+            dictionary_imagenames[i] = str(image)
 
             if min_side < 224:  # necessary condition (otherwise error is thrown)
                 # os.remove(image_path)
@@ -90,7 +90,7 @@ if __name__ == "__main__":
                 # print(img.shape)
                 continue
 
-            dictionary_imagenames[i] = str(image)
+
             # load and preprocess image
             pil_img = Image.fromarray(img.copy())
             # skip black and white images
@@ -100,17 +100,14 @@ if __name__ == "__main__":
                 # print(img.shape)
                 continue
 
-            # if i % 50 != 0:
-            #    continue
-
             im_cropped = preprocess_image(pil_img)
-            image = Image.fromarray(img)
-            image = to_tensor(image).unsqueeze(0)  # .to(device)
+            image = to_tensor(im_cropped).unsqueeze(0).to(device)
 
             # compute layer activation
             layer = list(model.children())[layer_number]
             activations = SaveFeatures(layer)
             predictions = model(image)[0]
+
             mean_act = [
                 activations.features[0, i].mean()
                 for i in range(activations.features.shape[1])
