@@ -46,7 +46,7 @@ arrow_spacing = 143
 visible_arrows_from_camera = [3]
 visible_arrows_to_predictions = [5]
 visible_arrows_between_filters = range(nr_arrows)
-animation_milliseconds = (500, 500, 500)  # fade in, opaque, fade out
+animation_milliseconds = (250, 500, 600)  # fade in, opaque, fade out
 
 analysis_refresh_seconds = 2
 
