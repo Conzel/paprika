@@ -1,5 +1,37 @@
-from ._analysis import NeuralNetworkAnalysis, ClassPrediction
+import copy
+import csv
+import os
+import random
+import json
+import time
+import numpy as np
+import torch
+from ._label_converter import *
+from pytorch_grad_cam import (
+    GradCAM,
+    ScoreCAM,
+    GradCAMPlusPlus,
+    AblationCAM,
+    XGradCAM,
+    EigenCAM,
+    FullGrad,
+    EigenGradCAM,
+)
+import torchvision.transforms as T
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
+import matplotlib.pyplot as plt
+from ._imagenet_class_list import IMAGENET_CLASS_LIST
+from lucent.modelzoo import inceptionv1
+from PIL import Image
+from abc import ABC, abstractmethod
+from typing import Dict, List, Tuple
+import csv
+from skimage.transform import resize
 
+from ._analysis import NeuralNetworkAnalysis, ClassPrediction, SaveFeatures
+from paprika.ml._config import *
+from ..ui._config import selected_layers
 
 class Inceptionv1Analysis(NeuralNetworkAnalysis):
     """
@@ -458,7 +490,13 @@ class TestImagesAnalysis(NeuralNetworkAnalysis):
         .unsqueeze(0)
         .to(device)
     )
+    feature_activations = SaveFeatures(list(model.children())[filter_strings_to_numbers["mixed5b"]])
     predictions = model(image)[0]
+    mean_act = []
+    for i in range(feature_activations.features.shape[1]):
+        mean_act.append(feature_activations.features[0, i].mean())
+    act_sum = torch.sum(torch.tensor(mean_act))
+    mean_act = (torch.tensor(mean_act) / act_sum).to(device)
 
     for class_id in class_ids:
         tensor = (
@@ -471,7 +509,7 @@ class TestImagesAnalysis(NeuralNetworkAnalysis):
         dictionary = json.load(
             open(f"{imagenet_relative_path}{class_id}/{class_id}_dictionary.json")
         )
-        dot_product = predictions[np.newaxis] @ tensor
+        dot_product = mean_act[np.newaxis] @ tensor
         for idx in range(dot_product.shape[1]):
             image_name = dictionary[str(idx)]
             all_imagenet_images.append(
