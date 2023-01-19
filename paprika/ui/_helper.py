@@ -101,9 +101,6 @@ def image_for_analysis(image: np.ndarray) -> np.ndarray:
     """
     analysis_image = bgr_to_rgb(image)
     analysis_image = middle_cropped_image(analysis_image)
-    # analysis_image = analysis_image / 255
-    # analysis_image = resize(analysis_image, (224, 224), anti_aliasing=True)
-    # analysis_image = analysis_image * 255
     analysis_image = np.require(analysis_image, np.uint8, "C")
     return analysis_image
 
@@ -231,11 +228,11 @@ def three_dots_label():
 
 
 def image_and_text_grid(
-    image_labels: List[QLabel], text_labels: List[QLabel], font_size: int, frame: QFrame
+    image_labels: List[QLabel], font_size: int, frame: QFrame
 ):
     """
     Creates a QGridLayout with filter_column_length columns and filter_row_length rows.
-    It organises the visualisation images in this grid. Below each image it adds a text label.
+    It organises the visualisation images in this grid.
     The QGridLayout is created with frame as its parent.
     """
     grid_layout = QGridLayout(frame)
@@ -249,12 +246,7 @@ def image_and_text_grid(
         for row in range(filter_row_length):
             v_layout = QVBoxLayout()
             image_label = image_labels[i]
-            text_label = text_labels[i]
-            text_label.setFont(QFont(german_font, font_size))
-            text_label.setStyleSheet(f"color: {german_colour}")
-            text_label.setAlignment(Qt.AlignCenter)
             v_layout.addWidget(image_label)
-            v_layout.addWidget(text_label)
             v_layout.addSpacing(vertical_spacing_filters)
             i += 1
             grid_layout.addLayout(v_layout, column, row)

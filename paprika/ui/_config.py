@@ -49,6 +49,7 @@ visible_arrows_between_filters = range(nr_arrows)
 animation_milliseconds = (250, 500, 600)  # fade in, opaque, fade out
 
 analysis_refresh_seconds = 2
+two_camera_images = False
 
 large_font_size = 25
 medium_font_size = 23

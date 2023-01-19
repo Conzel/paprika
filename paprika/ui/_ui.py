@@ -49,19 +49,17 @@ class UserInterface(QObject):
 
         # create labels for the two cameras
         self.running_camera_label = QLabel()
-        self.frozen_camera_label = QLabel()
+        if two_camera_images:
+            self.frozen_camera_label = QLabel()
 
         # create labels for the filter visualisations
         self.filter_image_labels = {}
-        self.filter_text_labels = {}
         self.frames = {}
         for layer in selected_layers:
             self.frames[layer] = QFrame()
             self.filter_image_labels[layer] = []
-            self.filter_text_labels[layer] = []
             for _ in range(filter_column_length * filter_row_length):
                 self.filter_image_labels[layer].append(QLabel())
-                self.filter_text_labels[layer].append(QLabel())
         self.arrow_labels = []
 
         # create labels for the saliency map
@@ -110,14 +108,6 @@ class UserInterface(QObject):
         # add the two camera feeds to a layout
         screen_widget = self.screen_widgets[0]
         layout = QGridLayout(screen_widget)
-        frozen_camera_layout = image_with_explanation(
-            self.frozen_camera_label,
-            large_font_size,
-            frozen_camera_german_text,
-            frozen_camera_english_text,
-            QLabel(),
-            QLabel(),
-        )
         running_camera_layout = image_with_explanation(
             self.running_camera_label,
             large_font_size,
@@ -126,8 +116,20 @@ class UserInterface(QObject):
             QLabel(),
             QLabel(),
         )
-        layout.addLayout(frozen_camera_layout, 0, 0, Qt.AlignCenter)
-        layout.addLayout(running_camera_layout, 1, 0, Qt.AlignCenter)
+        if two_camera_images:
+            frozen_camera_layout = image_with_explanation(
+                self.frozen_camera_label,
+                large_font_size,
+                frozen_camera_german_text,
+                frozen_camera_english_text,
+                QLabel(),
+                QLabel(),
+            )
+            layout.addLayout(frozen_camera_layout, 0, 0, Qt.AlignCenter)
+            layout.addLayout(running_camera_layout, 1, 0, Qt.AlignCenter)
+        else:
+            layout.addLayout(running_camera_layout, 0, 0, Qt.AlignCenter)
+            layout.addWidget(QLabel(), 1, 0, Qt.AlignCenter)
 
     def init_screen_lower_filters(self):
         # add the filter visualisations to a layout
@@ -139,7 +141,6 @@ class UserInterface(QObject):
             frame = self.frames[layer]
             image_and_text_grid(
                 self.filter_image_labels[layer],
-                self.filter_text_labels[layer],
                 small_font_size,
                 frame,
             )
@@ -165,7 +166,6 @@ class UserInterface(QObject):
             frame = self.frames[layer]
             image_and_text_grid(
                 self.filter_image_labels[layer],
-                self.filter_text_labels[layer],
                 small_font_size,
                 frame,
             )
@@ -241,10 +241,11 @@ class UserInterface(QObject):
         It changes the elements obtained from the analysis as well as the frozen camera image.
         """
         # set camera feed to new capture
-        image = analysis_dto.original_image
-        pixmap = camera_image_to_pixmap(image)
-        pixmap = resized_pixmap_by_height(pixmap, camera_capture_size)
-        self.frozen_camera_label.setPixmap(pixmap)
+        if two_camera_images:
+            image = analysis_dto.original_image
+            pixmap = camera_image_to_pixmap(image)
+            pixmap = resized_pixmap_by_height(pixmap, camera_capture_size)
+            self.frozen_camera_label.setPixmap(pixmap)
 
         # update the filter images in each layer
         layer_filters = analysis_dto.layer_filters
@@ -256,7 +257,6 @@ class UserInterface(QObject):
                 self.filter_image_labels[layer][i].setPixmap(
                     resized_pixmap_by_height(pixmap, filter_size)
                 )
-                # self.filter_text_labels[layer][i].setText(f"{round(filter_activation, 1)}%")
 
         # update the saliency map
         saliency_image = analysis_dto.saliency_map
