@@ -10,11 +10,11 @@ camera_capture_spacing = (
 camera_capture_labels_spacing = (
     8
 )  # spacing between the texts underneath the camera captures
-filter_size = 390
+filter_size = 400
 similar_image_height = 160
 similar_image_vertical_width = 120  # the width that a vertical image is cropped to
 similar_images_width_sum = 560  # the max width sum of the similar images in one line
-vertical_spacing_filters = 20
+vertical_spacing_filters = 40
 frame_margin_layer = (
     15,
     15,
@@ -40,16 +40,19 @@ score_width = 110
 label_width = 315
 images_width = 585
 
+analysis_refresh_seconds = 2
+two_camera_images = False
+
 # arrow configs
 nr_arrows = 10
 arrow_spacing = 143
-visible_arrows_from_camera = [3]
+if two_camera_images:
+    visible_arrows_from_camera = [3]
+else:
+    visible_arrows_from_camera = [4]
 visible_arrows_to_predictions = [5]
 visible_arrows_between_filters = range(nr_arrows)
 animation_milliseconds = (250, 500, 600)  # fade in, opaque, fade out
-
-analysis_refresh_seconds = 2
-two_camera_images = False
 
 large_font_size = 25
 medium_font_size = 23

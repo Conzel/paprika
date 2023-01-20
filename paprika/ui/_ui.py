@@ -129,7 +129,7 @@ class UserInterface(QObject):
             layout.addLayout(running_camera_layout, 1, 0, Qt.AlignCenter)
         else:
             layout.addLayout(running_camera_layout, 0, 0, Qt.AlignCenter)
-            layout.addWidget(QLabel(), 1, 0, Qt.AlignCenter)
+            # layout.addWidget(QLabel(), 1, 0, Qt.AlignCenter)
 
     def init_screen_lower_filters(self):
         # add the filter visualisations to a layout
