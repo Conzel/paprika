@@ -41,7 +41,7 @@ label_width = 315
 images_width = 585
 
 analysis_refresh_seconds = 2
-two_camera_images = False
+two_camera_images = True
 
 # arrow configs
 nr_arrows = 10
@@ -49,7 +49,7 @@ arrow_spacing = 143
 if two_camera_images:
     visible_arrows_from_camera = [3]
 else:
-    visible_arrows_from_camera = [4]
+    visible_arrows_from_camera = [5]
 visible_arrows_to_predictions = [5]
 visible_arrows_between_filters = range(nr_arrows)
 animation_milliseconds = (250, 500, 600)  # fade in, opaque, fade out
