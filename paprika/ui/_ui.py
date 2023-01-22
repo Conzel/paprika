@@ -6,8 +6,9 @@ from PyQt5.QtCore import (
     QPropertyAnimation,
     QParallelAnimationGroup,
     QSequentialAnimationGroup,
+    Qt
 )
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QKeySequence, QCursor
 from PyQt5.QtWidgets import QApplication, QGridLayout, QShortcut, QGraphicsOpacityEffect
 
 from paprika.cam import Camera
@@ -24,6 +25,7 @@ class UserInterface(QObject):
     def __init__(self, camera: Camera, analysis_class: NeuralNetworkAnalysis):
         super().__init__()
         self.app = QApplication(sys.argv)
+        self.app.setOverrideCursor(QCursor(Qt.BlankCursor))
 
         add_myriad_pro_fonts()
 
