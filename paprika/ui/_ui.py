@@ -101,6 +101,8 @@ class UserInterface(QObject):
         for screen_widget in self.screen_widgets:
             quit_shortcut = QShortcut(QKeySequence("Ctrl+Q"), screen_widget)
             quit_shortcut.activated.connect(self.app.quit)
+            quit_shortcut.activated.connect(self.running_camera_thread.quit)
+            quit_shortcut.activated.connect(self.analysis_thread.quit)
 
         # run the two camera feed threads
         self.running_camera_thread.start()
