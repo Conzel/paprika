@@ -14,12 +14,12 @@ filter_size = 400
 similar_image_height = 160
 similar_image_vertical_width = 120  # the width that a vertical image is cropped to
 similar_images_width_sum = 560  # the max width sum of the similar images in one line
-vertical_spacing_filters = 40
+vertical_spacing_filters = 37
 frame_margin_layer = (
     15,
     15,
     15,
-    15,
+    17,
 )  # left, top, right, bottom margins between layer content and frame
 frame_width = 3
 horizontal_spacing_filters = 15
