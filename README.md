@@ -4,6 +4,8 @@ works.
 
 It is on display from 02/2023 - 10/2023 (https://www.tuebingen.de/stadtmuseum/38998.html). 
 
+![cyber_5_440-2](https://user-images.githubusercontent.com/38732545/224004259-6cdea09b-1899-4609-9161-e04348a68561.jpg)
+
 ## Installation instructions
 First download poetry. Then, with poetry install, switch to the directory root. Activate a shell using 
 
@@ -24,6 +26,8 @@ poetry env remove <current environment>
 ```
 
 And then install the venv again.
+
+To run the UI, run the `run-ui.py` in the scripts folder. You might have to change the configuration under `paprika/ui/_config.py` if your setup differs from the one used in the museum.
 
 ## Repository structure
 - `scripts` contains everything that is directly executable and serves some testing purpose
