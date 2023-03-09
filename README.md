@@ -2,6 +2,8 @@
 Paprika is an art project for the Museum of Tübingen, where a team of students visualize how a neural image classifer 
 works. 
 
+It is on display from 02/2023 - 10/2023 (https://www.tuebingen.de/stadtmuseum/38998.html). 
+
 ## Installation instructions
 First download poetry. Then, with poetry install, switch to the directory root. Activate a shell using 
 
