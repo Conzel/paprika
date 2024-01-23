@@ -2,7 +2,7 @@
 Paprika is a project for the Museum of Tübingen, where a team of students visualize how a neural image classifer 
 works. 
 
-It is on display from 02/2023 - 10/2023 (https://www.tuebingen.de/stadtmuseum/38998.html). 
+It was on display from 02/2023 - 21/01/2024 (https://www.tuebingen.de/stadtmuseum/38998.html). 
 
 ![cyber_5_440-2](https://user-images.githubusercontent.com/38732545/224004259-6cdea09b-1899-4609-9161-e04348a68561.jpg)
 
